@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-import { objectActions } from '../../features/bucket/object-actions';
+import { objectActions } from '../../../features/bucket/object-actions';
 
 export async function POST(request: Request): Promise<
   | NextResponse<{
