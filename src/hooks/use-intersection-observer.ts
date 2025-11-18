@@ -7,6 +7,14 @@ type State = {
   isIntersecting: boolean;
 };
 
+/**
+ * Options to configure the `useIntersectionObserver` hook.
+ *
+ * @property root - The element that is used as the viewport for checking visibility of the target. Defaults to the browser viewport if not specified or if null.
+ * @property rootMargin - Margin around the root. Can have values similar to the CSS margin property (e.g., "10px 20px 30px 40px" or "10%").
+ * @property threshold - A single number or an array of numbers which indicate at what percentage of the target's visibility the observer's callback should be executed.
+ * @property freezeOnceVisible - If true, stops observing once the target is visible.
+ */
 type UseIntersectionObserverOptions = {
   root?: HTMLElement | null;
   rootMargin?: string;
@@ -14,6 +22,13 @@ type UseIntersectionObserverOptions = {
   freezeOnceVisible?: boolean;
 };
 
+/**
+ * The return type of the `useIntersectionObserver` hook.
+ *
+ * @property entry - The latest IntersectionObserverEntry observed.
+ * @property isIntersecting - A boolean indicating if the target is intersecting.
+ * @property ref - A ref callback to be assigned to the target element.
+ */
 type UseIntersectionObserverReturn = {
   entry: IntersectionObserverEntry | null;
   isIntersecting: boolean;
@@ -22,16 +37,16 @@ type UseIntersectionObserverReturn = {
 
 const ROOT_SENTINEL = {} as HTMLElement;
 
-const _intersectionObserver = new WeakMap<HTMLElement, Record<string, ReturnType<typeof createIntersectionObserver>>>();
+const intersectionObserver = new WeakMap<HTMLElement, Record<string, ReturnType<typeof createIntersectionObserver>>>();
 function getIntersectionObserverInstance(options: UseIntersectionObserverOptions) {
   const { root, ...keys } = options;
   const cacheKey = JSON.stringify(keys);
   const weakMapKey = root ?? ROOT_SENTINEL;
 
-  let base = _intersectionObserver.get(weakMapKey);
+  let base = intersectionObserver.get(weakMapKey);
   if (base == null) {
     base = {};
-    _intersectionObserver.set(weakMapKey, base);
+    intersectionObserver.set(weakMapKey, base);
   }
 
   return (base[cacheKey] ??= createIntersectionObserver(options));
@@ -59,6 +74,13 @@ function createIntersectionObserver(options: UseIntersectionObserverOptions) {
   };
 }
 
+/**
+ * A React hook that uses the Intersection Observer API to monitor the visibility of a target element.
+ *
+ * @param callback - The callback function to be executed when intersection changes.
+ * @param options - Options to configure the useIntersectionObserver.
+ * @returns {UseIntersectionObserverReturn} An object containing the ref callback, isIntersecting boolean, and the latest entry.
+ */
 export function useIntersectionObserver(
   callback: IntersectionObserverCallback,
   options: UseIntersectionObserverOptions,
