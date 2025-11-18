@@ -1,4 +1,5 @@
 import config from '@kubosho/configs/eslint';
+import tsParser from "@typescript-eslint/parser";
 import { defineConfig, globalIgnores } from 'eslint/config';
 import storybook from 'eslint-plugin-storybook';
 
@@ -12,7 +13,7 @@ export default defineConfig([
   {
     files: ['**/*.ts', '**/*.tsx'],
     languageOptions: {
-      parser: '@typescript-eslint/parser',
+      parser: tsParser,
       parserOptions: {
         projectService: {
           allowDefaultProject: ['.storybook/*.ts'],
