@@ -11,10 +11,12 @@ export default defineConfig([
   },
   {
     files: ['**/*.ts', '**/*.tsx'],
-    parser: '@typescript-eslint/parser',
-    parserOptions: {
-      projectService: {
-        allowDefaultProject: ['.storybook/*.ts'],
+    languageOptions: {
+      parser: '@typescript-eslint/parser',
+      parserOptions: {
+        projectService: {
+          allowDefaultProject: ['.storybook/*.ts'],
+        },
       },
     },
     rules: {
