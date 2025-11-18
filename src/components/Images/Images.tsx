@@ -2,6 +2,7 @@
 
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useRef } from 'react';
+
 import { SESSION_EXPIRED_TIME_IN_SECONDS } from '../../features/auth/session-expired-time';
 import { useIntersectionObserver } from '../../hooks/use-intersection-observer';
 

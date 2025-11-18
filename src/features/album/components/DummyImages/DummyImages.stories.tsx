@@ -1,5 +1,4 @@
 import preview from '../../../../../.storybook/preview';
-
 import { DummyImages } from '../DummyImages';
 
 const meta = preview.meta({
