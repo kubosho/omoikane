@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Link from 'next/link';
 
 import { auth } from '../../features/auth/auth';
@@ -9,9 +10,10 @@ export const SiteHeader = async (): Promise<React.JSX.Element> => {
 
   return (
     <header className="bg-primary-main flex items-center justify-between p-4">
-      <h1>
-        <Link href="/" className="text-white">
-          S3 image uploader
+      <h1 className="text-2xl">
+        <Link href="/" className="inline-flex items-center gap-2 text-white">
+          <Image src="/images/icons/learn.svg" alt="" width={32} height={24} />
+          Blog image manager
         </Link>
       </h1>
       {session?.user != null ? <SignOutButton /> : <SignInButton />}
