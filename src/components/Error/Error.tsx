@@ -10,7 +10,7 @@ type Props = {
 function ErrorContainer({ children }: { children: ReactNode }): React.JSX.Element {
   return (
     <>
-      <SiteHeader siteTitle="S3 image uploader" />
+      <SiteHeader />
       <main className="relative">
         <div className="absolute top-5 left-2/4 -translate-x-1/2">{children}</div>
       </main>
