@@ -1,10 +1,6 @@
-# S3 image uploader
+# Blog image manager
 
-Image uploader for AWS S3.
-
-## Requirements
-
-- Deno
+Blog image manager for <https://blog.kubosho.com>.
 
 ## Setup
 
@@ -32,29 +28,29 @@ AWS_CLOUD_FRONT_HOST_NAME=example.cloudfront.net
 Launch development server:
 
 ```bash
-deno task dev
+npm run dev
 ```
 
 Execute build:
 
 ```bash
-deno task build
+npm run build
 ```
 
 Run lint:
 
 ```bash
-deno task lint
+npm run lint
 ```
 
 Run test runner:
 
 ```bash
-deno task test
+npm run test
 ```
 
 Launch storybook:
 
 ```bash
-deno task storybook
+npm run storybook
 ```
