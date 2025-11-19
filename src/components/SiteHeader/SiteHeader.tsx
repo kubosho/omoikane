@@ -11,7 +11,7 @@ export const SiteHeader = async (): Promise<React.JSX.Element> => {
   return (
     <header className="bg-primary-main flex items-center justify-between p-4">
       <h1 className="text-2xl">
-        <Link href="/" className="inline-flex items-center gap-2 text-white">
+        <Link href="/" className="inline-flex items-center gap-2 text-monotone-100">
           <Image src="/images/icons/learn.svg" alt="" width={32} height={24} />
           Blog image manager
         </Link>
