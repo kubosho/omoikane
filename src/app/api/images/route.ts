@@ -1,18 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+import type { GetImagesErrorResponseObject, GetImagesSuccessResponseObject } from '../../../features/album/types/get-images';
 import { SESSION_EXPIRED_TIME_IN_SECONDS } from '../../../features/auth/session-expired-time';
 import { fetchImageUrls } from '../../../features/bucket/image-url-fetcher';
 
 const DEFAULT_LIMIT = 20 as const;
 
 export async function GET(request: NextRequest): Promise<
-  | NextResponse<{
-      urls: string[];
-      nextToken: string | null;
-    }>
-  | NextResponse<{
-      message: string;
-    }>
+  | NextResponse<GetImagesSuccessResponseObject>
+  | NextResponse<GetImagesErrorResponseObject>
 > {
   try {
     const searchParams = request.nextUrl.searchParams;
@@ -44,10 +40,19 @@ export async function GET(request: NextRequest): Promise<
       secondsToExpire: expiresIn,
     });
 
+    if ('message' in result) {
+      return NextResponse.json(
+        {
+          message: result.message,
+        },
+        { status: 500 },
+      );
+    }
+
     return NextResponse.json(
       {
         urls: result.urls,
-        nextToken: result.nextToken ?? null,
+        nextToken: result.nextToken,
       },
       { status: 200 },
     );

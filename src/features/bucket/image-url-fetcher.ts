@@ -1,6 +1,7 @@
 import { GetObjectCommand, S3ServiceException } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
+import type { GetImagesErrorResponseObject, GetImagesSuccessResponseObject } from '../album/types/get-images';
 import { objectActions } from './object-actions';
 import { s3ClientInstance } from './s3-client-instance';
 
@@ -29,10 +30,13 @@ export async function fetchImageUrls(params: {
   limit: number;
   nextToken?: string;
   secondsToExpire: number;
-}): Promise<{ urls: string[]; nextToken?: string | null }> {
+}): Promise<GetImagesSuccessResponseObject | GetImagesErrorResponseObject> {
   try {
     const client = s3ClientInstance();
-    const { keys, nextToken } = await fetchFileKeys({ limit: params.limit, nextToken: params.nextToken });
+    const { keys, nextToken } = await fetchFileKeys({
+      limit: params.limit,
+      nextToken: params.nextToken,
+    });
     const urls = await Promise.all(
       keys.map((key) => {
         const command = new GetObjectCommand({
@@ -46,10 +50,13 @@ export async function fetchImageUrls(params: {
 
     return {
       urls,
-      nextToken,
+      nextToken: nextToken ?? null,
     };
   } catch (error) {
-    console.error(error);
-    return { urls: [], nextToken: null };
+    if (error instanceof Error) {
+      return { message: error.message };
+    }
+
+    return { message: 'Unexpected error occurred while fetching image URLs.' };
   }
 }
