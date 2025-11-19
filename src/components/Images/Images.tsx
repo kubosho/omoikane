@@ -95,11 +95,11 @@ export function Images({ imageUrls, nextToken }: Props): React.JSX.Element {
   }
 
   return (
-    <>
+    <div>
       <p className="sr-only" aria-live="polite">
         {isFetching ? 'Loading images...' : `${fetchedImagesCountRef.current} images loaded.`}
       </p>
-      <ul className="grid grid-cols-4 gap-6 px-6 py-6">
+      <ul className="grid grid-cols-4 gap-6">
         {imageData.map(({ name, url }, index) => (
           <li key={index}>
             <img src={url} alt="" width="auto" height="300" className="object-contain justify-self-center h-75 shadow-md" />
@@ -112,6 +112,6 @@ export function Images({ imageUrls, nextToken }: Props): React.JSX.Element {
           {isFetching ? 'Loading images...' : 'Scroll down to load more images'}
         </p>
       )}
-    </>
+    </div>
   );
 }
