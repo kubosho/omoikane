@@ -26,7 +26,6 @@
     "next-auth": "5.0.0-beta.30",
     "react": "19.2.0",
     "react-dom": "19.2.0",
-    "rxjs": "7.5.5",
     "zustand": "5.0.8"
   },
   "devDependencies": {
