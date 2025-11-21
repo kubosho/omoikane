@@ -3,15 +3,16 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useRef } from 'react';
 
-import { SESSION_EXPIRED_TIME_IN_SECONDS } from '../../features/auth/session-expired-time';
-import { useIntersectionObserver } from '../../hooks/use-intersection-observer';
+import { useIntersectionObserver } from '../../../../hooks/use-intersection-observer';
+import { SESSION_EXPIRED_TIME_IN_SECONDS } from '../../../auth/session-expired-time';
+import { getImagesSuccessResponseSchema } from '../../types/get-images';
 
 type Props = {
   imageUrls: string[];
   nextToken: string | null;
 };
 
-export function Images({ imageUrls, nextToken }: Props): React.JSX.Element {
+export function Images({ imageUrls: initialImageUrls, nextToken }: Props): React.JSX.Element {
   const previousImagesCountRef = useRef(0);
   const fetchedImagesCountRef = useRef(0);
 
@@ -33,11 +34,14 @@ export function Images({ imageUrls, nextToken }: Props): React.JSX.Element {
         throw new Error('Failed to fetch images');
       }
 
-      const data = await response.json();
+      const result = getImagesSuccessResponseSchema.safeParse(await response.json());
+      if (!result.success) {
+        throw new Error('Invalid response type from server');
+      }
 
       return {
-        urls: data.urls,
-        nextToken: data.nextToken,
+        urls: result.data.urls,
+        nextToken: result.data.nextToken,
       };
     },
     getNextPageParam: (lastPage) => {
@@ -48,7 +52,7 @@ export function Images({ imageUrls, nextToken }: Props): React.JSX.Element {
       return { nextToken: lastPage.nextToken };
     },
     initialData: {
-      pages: [{ urls: imageUrls, nextToken: nextToken }],
+      pages: [{ urls: initialImageUrls, nextToken: nextToken }],
       pageParams: [{ nextToken: null }],
     },
     initialPageParam: { nextToken: null } as { nextToken: string | null },
@@ -60,7 +64,7 @@ export function Images({ imageUrls, nextToken }: Props): React.JSX.Element {
   const { ref } = useIntersectionObserver(
     (entries) => {
       if (entries[0].isIntersecting && hasNextPage && !isFetching) {
-        fetchNextPage();
+        void fetchNextPage();
       }
     },
     {
@@ -69,7 +73,7 @@ export function Images({ imageUrls, nextToken }: Props): React.JSX.Element {
     },
   );
 
-  const allImageUrls = data?.pages.flatMap((page) => page.urls) ?? imageUrls;
+  const allImageUrls = data?.pages.flatMap((page) => page.urls) ?? initialImageUrls;
   const imageData = allImageUrls.map((imageUrl) => {
     const url = new URL(imageUrl);
     const name = url.pathname.slice(1);
@@ -102,7 +106,13 @@ export function Images({ imageUrls, nextToken }: Props): React.JSX.Element {
       <ul className="grid grid-cols-4 gap-6">
         {imageData.map(({ name, url }, index) => (
           <li key={index}>
-            <img src={url} alt="" width="auto" height="300" className="object-contain justify-self-center h-75 shadow-md" />
+            <img
+              src={url}
+              alt=""
+              width="auto"
+              height="300"
+              className="object-contain justify-self-center h-75 shadow-md"
+            />
             <p className="mt-1">{name}</p>
           </li>
         ))}
