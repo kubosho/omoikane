@@ -1,9 +1,6 @@
 import { type NextRequest, NextResponse } from 'next/server';
 
-import type {
-  UpsertImagesErrorResponseObject,
-  UpsertImagesSuccessResponseObject,
-} from '../../../../features/album/types/upsert-images';
+import type { UpsertImagesResponseObject } from '../../../../features/album/types/upsert-images';
 import { objectActions } from '../../../../features/bucket/object-actions';
 
 // Don't want to use let.
@@ -16,9 +13,7 @@ const imageData = new WeakMap<Request, Uint8Array>();
  * A. We avoid FormData to prevent forcing the client to generate it,
  *    allowing for pure JSON exchanges.
  */
-export async function POST(
-  request: NextRequest,
-): Promise<NextResponse<UpsertImagesSuccessResponseObject> | NextResponse<UpsertImagesErrorResponseObject>> {
+export async function POST(request: NextRequest): Promise<NextResponse<UpsertImagesResponseObject>> {
   const contentType = request.headers.get('content-type');
   if (contentType == null) {
     return NextResponse.json(
