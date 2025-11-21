@@ -1,9 +1,11 @@
 "use client";
 
+import { useQueryClient } from '@tanstack/react-query';
 import { useCallback, useState } from 'react';
 
 import { ImageUploadStatus } from '../types/image-upload-status';
-import { upsertImagesSuccessResponseSchema } from '../types/upsert-images';
+import { getImagesQueryKey } from '../utils/get-images-query-key';
+import { upsertImagesSuccessResponseSchema } from '../utils/upsert-images-schema';
 
 type UseImageUploaderResult = {
   uploadImage: (files: File[]) => Promise<void>;
@@ -14,6 +16,7 @@ type UseImageUploaderResult = {
 export const useImageUploader = (): UseImageUploaderResult => {
   const [status, setStatus] = useState<ImageUploadStatus>('idle');
   const [error, setError] = useState<string | null>(null);
+  const queryClient = useQueryClient();
 
   const resetState = useCallback(() => {
     setStatus('idle');
@@ -55,6 +58,8 @@ export const useImageUploader = (): UseImageUploaderResult => {
             return result.data;
           }),
         );
+
+        void queryClient.invalidateQueries({ queryKey: getImagesQueryKey });
 
         setStatus('success');
       } catch (error) {
