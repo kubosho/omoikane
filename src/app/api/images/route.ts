@@ -1,21 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import type { GetImagesErrorResponseObject, GetImagesSuccessResponseObject } from '../../../features/album/types/get-images';
+import type { GetImagesResponseObject } from '../../../features/album/types/get-images';
 import { SESSION_EXPIRED_TIME_IN_SECONDS } from '../../../features/auth/session-expired-time';
 import { fetchImageUrls } from '../../../features/bucket/image-url-fetcher';
 
 const DEFAULT_LIMIT = 20 as const;
 
-export async function GET(request: NextRequest): Promise<
-  | NextResponse<GetImagesSuccessResponseObject>
-  | NextResponse<GetImagesErrorResponseObject>
-> {
+export async function GET(request: NextRequest): Promise<NextResponse<GetImagesResponseObject>> {
   try {
     const searchParams = request.nextUrl.searchParams;
-    const limit = Number(searchParams.get('limit')) || DEFAULT_LIMIT;
-    const nextToken = searchParams.get('nextToken') || undefined;
-    const expiresIn = Number(searchParams.get('expiresIn')) || SESSION_EXPIRED_TIME_IN_SECONDS;
 
+    const limit = Number(searchParams.get('limit')) || DEFAULT_LIMIT;
     if (limit <= 0 || limit > 100) {
       return NextResponse.json(
         {
@@ -25,6 +20,7 @@ export async function GET(request: NextRequest): Promise<
       );
     }
 
+    const expiresIn = Number(searchParams.get('expiresIn')) || SESSION_EXPIRED_TIME_IN_SECONDS;
     if (expiresIn <= 0) {
       return NextResponse.json(
         {
@@ -34,12 +30,13 @@ export async function GET(request: NextRequest): Promise<
       );
     }
 
+    const nextToken = searchParams.get('nextToken') || undefined;
+
     const result = await fetchImageUrls({
       limit,
       nextToken,
       secondsToExpire: expiresIn,
     });
-
     if ('message' in result) {
       return NextResponse.json(
         {
@@ -57,10 +54,13 @@ export async function GET(request: NextRequest): Promise<
       { status: 200 },
     );
   } catch (error) {
-    console.error('Failed to fetch image URLs:', error);
+    if (error instanceof Error) {
+      return NextResponse.json({ message: `Fetch failed: ${error.message}` }, { status: 500 });
+    }
+
     return NextResponse.json(
       {
-        message: 'Failed to fetch images.',
+        message: 'Failed to fetch images due to an unexpected error.',
       },
       { status: 500 },
     );
