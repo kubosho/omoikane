@@ -1,5 +1,5 @@
 import { S3ServiceException } from '@aws-sdk/client-s3';
-import { beforeEach, describe, expect, it, jest } from '@jest/globals';
+import { afterAll, beforeAll, beforeEach, describe, expect, it, jest } from '@jest/globals';
 
 import type { GetImagesErrorResponseObject, GetImagesSuccessResponseObject } from '../album/types/get-images';
 import { fetchImageUrls } from './image-url-fetcher';
@@ -21,10 +21,24 @@ const createFakeS3ServiceException = (message: string): S3ServiceException =>
   });
 
 describe('fetchImageUrls', () => {
+  const ORIGINAL_ENV = process.env;
+
+  beforeAll(() => {
+    process.env = { ...ORIGINAL_ENV };
+    process.env.AWS_ACCESS_KEY_ID = 'test-access-key';
+    process.env.AWS_SECRET_ACCESS_KEY = 'test-secret-key';
+    process.env.AWS_S3_BUCKET_NAME = 'test-bucket';
+    process.env.AWS_S3_HOST_NAME = 'test-host';
+    process.env.AWS_S3_REGION_NAME = 'test-region';
+  });
+
   beforeEach(() => {
     jest.clearAllMocks();
     jest.restoreAllMocks();
-    process.env.AWS_S3_BUCKET_NAME = 'test-bucket';
+  });
+
+  afterAll(() => {
+    process.env = ORIGINAL_ENV;
   });
 
   it('returns signed image URLs when S3 objects are available', async () => {
@@ -35,7 +49,7 @@ describe('fetchImageUrls', () => {
     });
 
     // Act
-    const result = (await fetchImageUrls({ limit: 3, secondsToExpire: 600 })as GetImagesSuccessResponseObject);
+    const result = (await fetchImageUrls({ limit: 3, secondsToExpire: 600 })) as GetImagesSuccessResponseObject;
 
     // Assert
     expect(result.urls).toHaveLength(2);
