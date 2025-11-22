@@ -7,6 +7,13 @@ type State = {
   isIntersecting: boolean;
 };
 
+interface IntersectionObserverInstance {
+  observer: IntersectionObserver;
+  getListeners(): Set<IntersectionObserverCallback>;
+  subscribe: (callback: IntersectionObserverCallback) => Set<IntersectionObserverCallback>;
+  unsubscribe: (callback: IntersectionObserverCallback) => boolean;
+}
+
 /**
  * Options to configure the `useIntersectionObserver` hook.
  *
@@ -29,16 +36,16 @@ type UseIntersectionObserverOptions = {
  * @property isIntersecting - A boolean indicating if the target is intersecting.
  * @property ref - A ref callback to be assigned to the target element.
  */
-type UseIntersectionObserverReturn = {
+interface UseIntersectionObserverReturn {
   entry: IntersectionObserverEntry | null;
   isIntersecting: boolean;
   ref: (node?: Element | null) => void;
-};
+}
 
 const ROOT_SENTINEL = {} as HTMLElement;
 
 const intersectionObserver = new WeakMap<HTMLElement, Record<string, ReturnType<typeof createIntersectionObserver>>>();
-function getIntersectionObserverInstance(options: UseIntersectionObserverOptions) {
+function getIntersectionObserverInstance(options: UseIntersectionObserverOptions): IntersectionObserverInstance {
   const { root, ...keys } = options;
   const cacheKey = JSON.stringify(keys);
   const weakMapKey = root ?? ROOT_SENTINEL;
@@ -52,7 +59,7 @@ function getIntersectionObserverInstance(options: UseIntersectionObserverOptions
   return (base[cacheKey] ??= createIntersectionObserver(options));
 }
 
-function createIntersectionObserver(options: UseIntersectionObserverOptions) {
+function createIntersectionObserver(options: UseIntersectionObserverOptions): IntersectionObserverInstance {
   const { root = null, rootMargin = '0px', threshold = 0 } = options;
   const callbacks: Set<IntersectionObserverCallback> = new Set();
   const observer = new IntersectionObserver(
