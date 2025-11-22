@@ -4,7 +4,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useCallback, useState } from 'react';
 
 import { ImageUploadStatus } from '../types/image-upload-status';
-import { getImagesQueryKey } from '../utils/get-images-query-key';
+import { imagesQueryKey } from '../utils/images-query-key';
 import { upsertImagesSuccessResponseSchema } from '../utils/upsert-images-schema';
 
 type UseImageUploaderResult = {
@@ -58,7 +58,7 @@ export const useImageUploader = (): UseImageUploaderResult => {
 
       try {
         await Promise.all(files.map(uploadSingleImage));
-        void queryClient.invalidateQueries({ queryKey: getImagesQueryKey });
+        void queryClient.invalidateQueries({ queryKey: imagesQueryKey });
         setStatus('success');
       } catch (error) {
         setStatus('error');
