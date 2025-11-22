@@ -13,6 +13,34 @@ type Props = {
   nextToken: string | null;
 };
 
+async function fetchImages(params: {
+  nextToken: string | null;
+}): Promise<{ urls: string[]; nextToken: string | null }> {
+  const imageRequestParams = new URLSearchParams({
+    limit: '20',
+    expiresIn: SESSION_EXPIRED_TIME_IN_SECONDS.toString(),
+  });
+
+  if (params?.nextToken != null && params.nextToken !== '') {
+    imageRequestParams.set('nextToken', params.nextToken);
+  }
+
+  const response = await fetch(`/api/images?${imageRequestParams.toString()}`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch images.');
+  }
+
+  const result = getImagesSuccessResponseSchema.safeParse(await response.json());
+  if (!result.success) {
+    throw new Error('Invalid response type from server.');
+  }
+
+  return {
+    urls: result.data.urls,
+    nextToken: result.data.nextToken,
+  };
+}
+
 export function Images({ imageUrls: initialImageUrls, nextToken }: Props): React.JSX.Element {
   const previousImagesCountRef = useRef(0);
   const fetchedImagesCountRef = useRef(0);
@@ -20,31 +48,7 @@ export function Images({ imageUrls: initialImageUrls, nextToken }: Props): React
   // Fetch images with infinite scrolling
   const { data, fetchNextPage, hasNextPage, isFetching } = useInfiniteQuery({
     queryKey: getImagesQueryKey,
-    queryFn: async ({ pageParam }) => {
-      const params = new URLSearchParams({
-        limit: '20',
-        expiresIn: SESSION_EXPIRED_TIME_IN_SECONDS.toString(),
-      });
-
-      if (pageParam?.nextToken != null && pageParam.nextToken !== '') {
-        params.set('nextToken', pageParam.nextToken);
-      }
-
-      const response = await fetch(`/api/images?${params.toString()}`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch images');
-      }
-
-      const result = getImagesSuccessResponseSchema.safeParse(await response.json());
-      if (!result.success) {
-        throw new Error('Invalid response type from server');
-      }
-
-      return {
-        urls: result.data.urls,
-        nextToken: result.data.nextToken,
-      };
-    },
+    queryFn: ({ pageParam }) => fetchImages({ nextToken: pageParam?.nextToken }),
     getNextPageParam: (lastPage) => {
       if (!lastPage.nextToken) {
         return null;
