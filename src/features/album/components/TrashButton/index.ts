@@ -1,0 +1,1 @@
+export { TrashButton } from './TrashButton';
