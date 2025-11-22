@@ -1,6 +1,7 @@
 import { S3ServiceException } from '@aws-sdk/client-s3';
 import { beforeEach, describe, expect, it, jest } from '@jest/globals';
 
+import type { GetImagesErrorResponseObject, GetImagesSuccessResponseObject } from '../album/types/get-images';
 import { fetchImageUrls } from './image-url-fetcher';
 import { objectActions } from './object-actions';
 
@@ -34,7 +35,7 @@ describe('fetchImageUrls', () => {
     });
 
     // Act
-    const result = await fetchImageUrls({ limit: 3, secondsToExpire: 600 });
+    const result = (await fetchImageUrls({ limit: 3, secondsToExpire: 600 })as GetImagesSuccessResponseObject);
 
     // Assert
     expect(result.urls).toHaveLength(2);
@@ -46,31 +47,29 @@ describe('fetchImageUrls', () => {
     );
   });
 
-  it('returns an empty array when an S3ServiceException occurs', async () => {
+  it('returns an error message when an S3ServiceException occurs', async () => {
     // Arrange
     const s3Error = createFakeS3ServiceException('S3 failure');
     jest.spyOn(objectActions, 'readObjects').mockImplementation(() => {
       throw s3Error;
     });
-    jest.spyOn(console, 'error').mockImplementation(() => {});
 
     // Act
-    const result = await fetchImageUrls({ limit: 2, secondsToExpire: 120 });
+    const result = (await fetchImageUrls({ limit: 2, secondsToExpire: 120 })) as GetImagesErrorResponseObject;
 
     // Assert
-    expect(result.urls).toEqual([]);
+    expect(result.message).toContain('Failed to fetch file keys: S3 failure');
   });
 
-  it('returns an empty array when an unexpected error occurs', async () => {
+  it('returns an error message when an unexpected error occurs', async () => {
     // Arrange
     const unexpectedError = new Error('Unexpected failure');
     jest.spyOn(objectActions, 'readObjects').mockRejectedValue(unexpectedError);
-    jest.spyOn(console, 'error').mockImplementation(() => {});
 
     // Act
-    const result = await fetchImageUrls({ limit: 5, secondsToExpire: 300 });
+    const result = (await fetchImageUrls({ limit: 5, secondsToExpire: 300 })) as GetImagesErrorResponseObject;
 
     // Assert
-    expect(result.urls).toEqual([]);
+    expect(result.message).toBe('Unexpected S3 error while fetching file keys');
   });
 });
