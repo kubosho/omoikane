@@ -58,9 +58,7 @@ export const useImageUploader = (): UseImageUploaderResult => {
 
       try {
         await Promise.all(files.map(uploadSingleImage));
-
         void queryClient.invalidateQueries({ queryKey: getImagesQueryKey });
-
         setStatus('success');
       } catch (error) {
         setStatus('error');
