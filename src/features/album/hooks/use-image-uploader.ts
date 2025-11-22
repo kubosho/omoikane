@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { useQueryClient } from '@tanstack/react-query';
 import { useCallback, useState } from 'react';
@@ -11,6 +11,30 @@ type UseImageUploaderResult = {
   uploadImage: (files: File[]) => Promise<void>;
   status: ImageUploadStatus;
   error: string | null;
+};
+
+const uploadSingleImage = async (file: File): Promise<{ imagePath: string }> => {
+  const params = new URLSearchParams();
+  // Not using append() to prevent multiple parameters added.
+  params.set('filename', file.name);
+
+  const response = await fetch(`/api/images/upload?${params.toString()}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': file.type,
+    },
+    body: file,
+  });
+  if (!response.ok) {
+    throw new Error(`Upload failed with status ${response.status}.`);
+  }
+
+  const result = upsertImagesSuccessResponseSchema.safeParse(await response.json());
+  if (!result.success) {
+    throw new Error('Invalid response type from server.');
+  }
+
+  return result.data;
 };
 
 export const useImageUploader = (): UseImageUploaderResult => {
@@ -33,31 +57,7 @@ export const useImageUploader = (): UseImageUploaderResult => {
       setError(null);
 
       try {
-        await Promise.all(
-          files.map(async (file) => {
-            const params = new URLSearchParams();
-            // Not using append() to prevent multiple parameters added.
-            params.set('filename', file.name);
-
-            const response = await fetch(`/api/images/upload?${params.toString()}`, {
-              method: 'POST',
-              headers: {
-                'Content-Type': file.type,
-              },
-              body: file,
-            });
-            if (!response.ok) {
-              throw new Error(`Upload failed with status ${response.status}`);
-            }
-
-            const result = upsertImagesSuccessResponseSchema.safeParse(await response.json());
-            if (!result.success) {
-              throw new Error('Invalid response type from server');
-            }
-
-            return result.data;
-          }),
-        );
+        await Promise.all(files.map(uploadSingleImage));
 
         void queryClient.invalidateQueries({ queryKey: getImagesQueryKey });
 
