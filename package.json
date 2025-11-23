@@ -12,7 +12,7 @@
     "lint:eslint": "eslint .",
     "lint:secretlint": "secretlint '**/*'",
     "test": "dotenvx run -- jest",
-    "coverage": "dotenvx run -- jest --coverage",
+    "test:coverage": "dotenvx run -- jest --coverage",
     "storybook": "dotenvx run -- storybook dev -p 45538"
   },
   "dependencies": {
