@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 import { Error } from '../components/Error';
 import { SiteHeader } from '../components/SiteHeader';
 import { ERROR_REASON, ErrorReason } from '../constants/error-reason';
+import { IMAGE_UPLOAD_LIMIT } from '../constants/image-upload-limit';
 import { Images } from '../features/album/components/Images';
 import { ImageUploadButton } from '../features/album/components/ImageUploadButton';
 import { auth } from '../features/auth/auth';
@@ -74,7 +75,7 @@ export default async function IndexPage(): Promise<React.JSX.Element> {
           <TanstackQueryClientProvider>
             <div className={session?.user == null ? '' : 'grid grid-cols-[auto_1fr] gap-6 px-6 py-6'}>
               <ImageUploadButton />
-              <FileUpload.Root accept="image/*" maxFiles={5}>
+              <FileUpload.Root accept="image/*" maxFiles={IMAGE_UPLOAD_LIMIT}>
                 <FileUpload.HiddenInput />
                 <Images imageUrls={imageUrls} nextToken={nextToken} />
               </FileUpload.Root>
