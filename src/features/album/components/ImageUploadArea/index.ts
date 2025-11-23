@@ -1,0 +1,1 @@
+export { ImageUploadArea } from './ImageUploadArea';
