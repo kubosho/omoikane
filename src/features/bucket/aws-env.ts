@@ -4,8 +4,6 @@ const AWS_ENV_KEYS = [
   'AWS_ACCESS_KEY_ID',
   'AWS_SECRET_ACCESS_KEY',
   'AWS_S3_BUCKET_NAME',
-  'AWS_S3_HOST_NAME',
-  'AWS_S3_REGION_NAME',
 ] as const;
 
 export type AwsEnv = Record<(typeof AWS_ENV_KEYS)[number], string>;
