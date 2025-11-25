@@ -42,7 +42,7 @@
     "@storybook/addon-styling-webpack": "3.0.0",
     "@storybook/builder-vite": "10.0.2",
     "@storybook/nextjs": "10.0.7",
-    "@storybook/testing-library": "0.2.1",
+    "@storybook/testing-library": "0.2.2",
     "@tailwindcss/postcss": "4.1.16",
     "@testing-library/dom": "10.4.1",
     "@testing-library/jest-dom": "6.9.1",
