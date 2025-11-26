@@ -24,7 +24,7 @@
     "@aws-sdk/s3-request-presigner": "3.922.0",
     "@aws-sdk/url-parser": "3.370.0",
     "@dotenvx/dotenvx": "1.51.1",
-    "@tanstack/react-query": "5.90.7",
+    "@tanstack/react-query": "5.90.10",
     "next": "16.0.1",
     "next-auth": "5.0.0-beta.30",
     "react": "19.2.0",
