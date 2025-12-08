@@ -18,6 +18,7 @@
   "dependencies": {
     "@ark-ui/react": "5.27.1",
     "@aws-sdk/client-s3": "3.937.0",
+    "@aws-sdk/credential-providers": "3.946.0",
     "@aws-sdk/hash-node": "3.374.0",
     "@aws-sdk/middleware-bucket-endpoint": "3.936.0",
     "@aws-sdk/protocol-http": "3.374.0",
