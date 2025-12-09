@@ -10,7 +10,7 @@ type Props = {
 
 export function SignInButton({ className }: Props): React.JSX.Element {
   const handleSignInAction = useCallback(async () => {
-    await handleSignIn('google');
+    await handleSignIn('cognito');
   }, []);
 
   return (
@@ -19,7 +19,7 @@ export function SignInButton({ className }: Props): React.JSX.Element {
         className="bg-primary-main border border-primary-sub px-4 pt-1 pb-2 rounded-1 text-monotone-100"
         type="submit"
       >
-        Sign in with Google
+        Sign in
       </button>
     </form>
   );

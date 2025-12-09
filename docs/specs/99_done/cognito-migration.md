@@ -47,7 +47,7 @@ sequenceDiagram
     Cognito-->>AuthJS: IDトークン (JWT)
     AuthJS->>AuthJS: signInコールバック (メール認可チェック)
     alt 許可されていないメール
-        AuthJS-->>Browser: /auth/error へリダイレクト
+        AuthJS-->>Browser: / へリダイレクト (エラー表示)
     else 許可されたメール
         AuthJS-->>Browser: セッション作成
         Browser->>Server: APIリクエスト + セッション
