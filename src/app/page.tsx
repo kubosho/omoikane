@@ -1,9 +1,7 @@
 import { FileUpload } from '@ark-ui/react/file-upload';
 import type { Metadata } from 'next';
 
-import { Error } from '../components/Error';
 import { SiteHeader } from '../components/SiteHeader';
-import { ERROR_REASON, ErrorReason } from '../constants/error-reason';
 import { IMAGE_UPLOAD_LIMIT } from '../constants/image-upload-limit';
 import { Images } from '../features/album/components/Images';
 import { ImageUploadButton } from '../features/album/components/ImageUploadButton';
@@ -18,7 +16,7 @@ type Contents =
       imageUrls: never[];
       nextToken: null;
       isError: true;
-      errorReason: ErrorReason;
+      errorReason: string;
     }
   | {
       imageUrls: string[];
@@ -26,6 +24,17 @@ type Contents =
       isError: false;
       errorReason: null;
     };
+
+type Props = {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+};
+
+const errorMessages: Record<string, string> = {
+  Configuration: 'There is a problem with the server configuration.',
+  AccessDenied: 'Access denied. Please sign in with an allowed account.',
+  Verification: 'The verification of the authentication token failed.',
+  Default: 'An error occurred during authentication.',
+};
 
 export const metadata: Metadata = {
   title: 'Blog image manager',
@@ -46,16 +55,21 @@ async function getContents(): Promise<Contents> {
     imageUrls: [],
     nextToken: null,
     isError: true,
-    errorReason: ERROR_REASON.GENERAL_ERROR,
+    errorReason: result.message,
   };
 }
 
-export default async function IndexPage(): Promise<React.JSX.Element> {
-  const session = await auth();
-  const { imageUrls, nextToken, isError, errorReason } = await getContents();
+export default async function IndexPage(props: Props): Promise<React.JSX.Element> {
+  const searchParams = await props.searchParams;
+  const error = searchParams.error;
 
-  if (isError) {
-    return <Error errorReason={errorReason} />;
+  const session = await auth();
+  const { imageUrls, nextToken } = await getContents();
+
+  let errorMessage = '';
+  if (error != null) {
+    const errorType = typeof error === 'string' ? error : error[0];
+    errorMessage = errorMessages[errorType] ?? errorMessages.Default;
   }
 
   return (
@@ -65,8 +79,17 @@ export default async function IndexPage(): Promise<React.JSX.Element> {
         {session?.user == null && (
           <div className="flex items-center justify-center h-full">
             <div className="inline-flex flex-col border p-6 rounded-2 border-neutral-border">
-              <h2 className="font-bold text-xl">Sign in required</h2>
-              <p className="mt-2">Sign in to display the image.</p>
+              {errorMessage ? (
+                <>
+                  <h2 className="font-bold text-xl text-red-600">Authentication Error</h2>
+                  <p className="mt-2">{errorMessage}</p>
+                </>
+              ) : (
+                <>
+                  <h2 className="font-bold text-xl">Sign in required</h2>
+                  <p className="mt-2">Sign in to display the image.</p>
+                </>
+              )}
               <SignInButton className="flex justify-end mt-6" />
             </div>
           </div>
