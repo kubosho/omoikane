@@ -16,3 +16,4 @@
 ### TypeScript Rules
 
 - **Avoid `any`**: Don't use the `any` type in type annotations, type assertions, or function parameters. Always use specific types or `unknown` with proper narrowing.
+- **Documentation**: Use [TSDoc](https://tsdoc.org/) when writing documentation about the code.
