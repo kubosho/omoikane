@@ -10,7 +10,7 @@ import {
   S3ServiceException,
 } from '@aws-sdk/client-s3';
 
-import { s3ClientInstance } from './s3-client-instance';
+import { getS3Client } from './s3-client-instance';
 
 interface ObjectActions {
   upsertObject: (params: { filename: string; body: Uint8Array }) => Promise<PutObjectCommandOutput>;
@@ -22,7 +22,7 @@ interface ObjectActions {
 class S3ObjectActions implements ObjectActions {
   async upsertObject(params: { filename: string; body: Uint8Array }): Promise<PutObjectCommandOutput> {
     const { filename, body } = params;
-    const client = s3ClientInstance();
+    const client = await getS3Client();
 
     const command = new PutObjectCommand({
       Bucket: process.env.AWS_S3_BUCKET_NAME,
@@ -44,7 +44,7 @@ class S3ObjectActions implements ObjectActions {
 
   async readObject(params: { filename: string }): Promise<GetObjectCommandOutput> {
     const { filename } = params;
-    const client = s3ClientInstance();
+    const client = await getS3Client();
 
     const command = new GetObjectCommand({
       Bucket: process.env.AWS_S3_BUCKET_NAME,
@@ -66,7 +66,7 @@ class S3ObjectActions implements ObjectActions {
 
   async readObjects(params: { limit: number; startingAfter?: string }): Promise<ListObjectsV2CommandOutput> {
     const { limit, startingAfter } = params;
-    const client = s3ClientInstance();
+    const client = await getS3Client();
 
     const command = new ListObjectsV2Command({
       Bucket: process.env.AWS_S3_BUCKET_NAME,
@@ -89,7 +89,7 @@ class S3ObjectActions implements ObjectActions {
 
   async deleteObject(params: { filename: string }): Promise<DeleteObjectCommandOutput> {
     const { filename } = params;
-    const client = s3ClientInstance();
+    const client = await getS3Client();
 
     const command = new DeleteObjectCommand({
       Bucket: process.env.AWS_S3_BUCKET_NAME,

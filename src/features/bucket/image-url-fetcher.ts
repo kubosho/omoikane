@@ -3,7 +3,7 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
 import type { GetImagesErrorResponseObject, GetImagesSuccessResponseObject } from '../album/types/get-images';
 import { objectActions } from './object-actions';
-import { s3ClientInstance } from './s3-client-instance';
+import { getS3Client } from './s3-client-instance';
 
 async function fetchFileKeys(params: {
   limit: number;
@@ -32,7 +32,7 @@ export async function fetchImageUrls(params: {
   secondsToExpire: number;
 }): Promise<GetImagesSuccessResponseObject | GetImagesErrorResponseObject> {
   try {
-    const client = s3ClientInstance();
+    const client = await getS3Client();
     const { keys, nextToken } = await fetchFileKeys({
       limit: params.limit,
       nextToken: params.nextToken,

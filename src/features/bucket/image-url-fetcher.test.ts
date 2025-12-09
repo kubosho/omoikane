@@ -1,16 +1,32 @@
-import { S3ServiceException } from '@aws-sdk/client-s3';
+import { GetObjectCommand, S3Client, S3ServiceException } from '@aws-sdk/client-s3';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, jest } from '@jest/globals';
 
 import type { GetImagesErrorResponseObject, GetImagesSuccessResponseObject } from '../album/types/get-images';
-import { fetchImageUrls } from './image-url-fetcher';
-import { objectActions } from './object-actions';
 
-jest.mock('./s3-client-instance', () => ({
-  s3ClientInstance: jest.fn().mockReturnValue({
+// Prevent 'next-auth' execution side-effects.
+jest.unstable_mockModule('./s3-client-instance', () => ({
+  getS3Client: jest.fn<() => Promise<S3Client>>().mockResolvedValue({
     config: {},
+    middlewareStack: jest.fn(),
     destroy: jest.fn(),
+    send: jest.fn(),
+  } as unknown as S3Client),
+}));
+
+// Decouple from S3 Client implementation.
+jest.unstable_mockModule('@aws-sdk/s3-request-presigner', () => ({
+  getSignedUrl: jest.fn().mockImplementation((_client: unknown, command: unknown) => {
+    // Simulate signed URL.
+    const cmd = command as GetObjectCommand;
+    const key = cmd.input.Key ?? 'unknown-key';
+    return Promise.resolve(
+      `https://test-bucket.s3.ap-northeast-1.amazonaws.com/${key}?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Signature=mock-signature`,
+    );
   }),
 }));
+
+const { fetchImageUrls } = await import('./image-url-fetcher');
+const { objectActions } = await import('./object-actions');
 
 const createFakeS3ServiceException = (message: string): S3ServiceException =>
   new S3ServiceException({
@@ -25,8 +41,6 @@ describe('fetchImageUrls', () => {
 
   beforeAll(() => {
     process.env = { ...ORIGINAL_ENV };
-    process.env.AWS_ACCESS_KEY_ID_FOR_APP = 'test-access-key';
-    process.env.AWS_SECRET_ACCESS_KEY_FOR_APP = 'test-secret-key';
     process.env.AWS_S3_BUCKET_NAME = 'test-bucket';
   });
 
