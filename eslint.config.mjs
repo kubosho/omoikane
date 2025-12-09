@@ -22,7 +22,7 @@ export default defineConfig([
       'import/no-extraneous-dependencies': [
         'error',
         {
-          devDependencies: ['**/.storybook/**/*.ts', '**/*.config.*', '**/*.stories.*', '**/*.test.*'],
+          devDependencies: ['**/.storybook/**/*.ts', '**/*.config.*', '**/*.setup.*', '**/*.stories.*', '**/*.test.*'],
         },
       ],
     },
