@@ -4,15 +4,15 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "PORT=45537 dotenvx run -- next dev",
+    "dev": "dotenvx run -- next dev",
     "build": "dotenvx run -- next build",
     "format": "prettier --write .",
-    "start": "PORT=45537 dotenvx run -- next start",
+    "start": "dotenvx run -- next start",
     "lint": "run-p lint:eslint lint:secretlint",
     "lint:eslint": "eslint .",
     "lint:secretlint": "secretlint '**/*'",
-    "test": "dotenvx run -- jest",
-    "test:coverage": "dotenvx run -- jest --coverage",
+    "test": "NODE_OPTIONS=--experimental-vm-modules dotenvx run -- jest",
+    "test:coverage": "NODE_OPTIONS=--experimental-vm-modules dotenvx run -- jest --coverage",
     "storybook": "dotenvx run -- storybook dev -p 45538"
   },
   "dependencies": {
@@ -74,6 +74,7 @@
     "secretlint": "11.2.5",
     "storybook": "10.1.4",
     "tailwindcss": "4.1.17",
+    "ts-jest": "29.4.6",
     "typescript": "5.9.3",
     "typescript-eslint": "8.48.1",
     "vite": "7.2.6"

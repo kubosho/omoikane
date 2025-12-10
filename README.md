@@ -17,6 +17,34 @@ To run the application, you need the decryption key.
 DOTENV_PRIVATE_KEY="your_private_key_here"
 ```
 
+### AWS Configuration
+
+To manage AWS resources, you need to configure the AWS CLI profile and region. We recommend using [direnv](https://direnv.net/) to automatically load environment variables.
+
+#### Option 1: Using direnv (Recommended)
+
+Install `direnv` and create (or modify) `.envrc` in the project root:
+
+```bash
+export AWS_PROFILE="{YOUR_AWS_PROFILE}"
+export AWS_DEFAULT_REGION="{YOUR_AWS_REGION}"
+```
+
+Allow the configuration:
+
+```bash
+direnv allow
+```
+
+#### Option 2: Manual Export
+
+If you do not use direnv, you must manually export the variables before running Terraform or AWS commands:
+
+```bash
+export AWS_PROFILE="{YOUR_AWS_PROFILE}"
+export AWS_DEFAULT_REGION="{YOUR_AWS_REGION}"
+```
+
 ## Development
 
 Start the development server:
