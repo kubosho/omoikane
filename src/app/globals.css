@@ -2,9 +2,6 @@
 @import '../../node_modules/@o2project/design-system/main.css';
 
 @theme {
-  /* Web page grid row */
-  --page-grid-row-value: auto 1fr;
-
   /* Border Radius */
   --radius-1: 0.25rem;
   --radius-2: 0.5rem;
