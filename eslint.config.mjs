@@ -5,7 +5,7 @@ import storybook from 'eslint-plugin-storybook';
 
 export default defineConfig([
   ...config,
-  globalIgnores(['.next/**', 'build/**', 'next-env.d.ts', 'out/**']),
+  globalIgnores(['.next/**', 'build/**', 'coverage/**', 'next-env.d.ts', 'out/**']),
   {
     files: ['**/*.stories.ts', '**/*.stories.tsx'],
     extends: [storybook.configs['flat/recommended']],
@@ -22,7 +22,7 @@ export default defineConfig([
       'import/no-extraneous-dependencies': [
         'error',
         {
-          devDependencies: ['**/.storybook/**/*.ts', '**/*.config.*', '**/*.stories.*', '**/*.test.*'],
+          devDependencies: ['**/.storybook/**/*.ts', '**/*.config.*', '**/*.setup.*', '**/*.stories.*', '**/*.test.*'],
         },
       ],
     },
