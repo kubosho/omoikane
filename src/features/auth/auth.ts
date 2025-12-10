@@ -58,6 +58,14 @@ const config = {
       }
 
       // AllowedEmails is empty, access is denied by default.
+      if (allowedEmails.length === 0) {
+        console.warn(
+          '[auth] ALLOWED_EMAILS is empty: denying access to all users. Check environment configuration.',
+        );
+
+        return false;
+      }
+
       return allowedEmails.includes(user.email);
     },
     jwt({ token, account }: { token: JWT; account?: Account | null }) {
