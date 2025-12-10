@@ -18,6 +18,7 @@ describe('S3 Client Instance', () => {
     process.env = { ...ORIGINAL_ENV };
     process.env.AUTH_COGNITO_ISSUER = 'https://cognito-idp.ap-northeast-1.amazonaws.com/test-pool-id';
     process.env.COGNITO_IDENTITY_POOL_ID = 'test-identity-pool-id';
+    process.env.AWS_REGION_NAME = 'ap-northeast-1';
     process.env.AWS_S3_BUCKET_NAME = 'test-bucket';
   });
 
