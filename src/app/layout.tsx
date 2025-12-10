@@ -16,8 +16,8 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#003760",
-}
+  themeColor: '#003760',
+};
 
 export default function RootLayout({ children }: Props): React.JSX.Element {
   return (

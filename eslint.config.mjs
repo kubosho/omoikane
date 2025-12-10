@@ -1,5 +1,5 @@
 import config from '@kubosho/configs/eslint';
-import tsParser from "@typescript-eslint/parser";
+import tsParser from '@typescript-eslint/parser';
 import { defineConfig, globalIgnores } from 'eslint/config';
 import storybook from 'eslint-plugin-storybook';
 
