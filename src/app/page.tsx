@@ -73,7 +73,7 @@ export default async function IndexPage(props: Props): Promise<React.JSX.Element
   }
 
   return (
-    <div className="grid grid-rows-(--page-grid-row-value) h-dvh">
+    <div className="grid grid-rows-[auto_1fr] h-dvh">
       <SiteHeader />
       <main>
         {session?.user == null && (
@@ -96,9 +96,11 @@ export default async function IndexPage(props: Props): Promise<React.JSX.Element
         )}
         {session?.user != null && (
           <TanstackQueryClientProvider>
-            <div className={session?.user == null ? '' : 'grid grid-cols-[auto_1fr] gap-6 px-6 py-6'}>
-              <ImageUploadButton />
-              <FileUpload.Root accept="image/*" maxFiles={IMAGE_UPLOAD_LIMIT}>
+            <div className={session?.user == null ? '' : 'flex flex-wrap gap-6 px-6 py-6'}>
+              <div className="shrink-0">
+                <ImageUploadButton />
+              </div>
+              <FileUpload.Root accept="image/*" maxFiles={IMAGE_UPLOAD_LIMIT} className="flex-1">
                 <FileUpload.HiddenInput />
                 <Images imageUrls={imageUrls} nextToken={nextToken} />
               </FileUpload.Root>
