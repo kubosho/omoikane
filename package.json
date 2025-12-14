@@ -26,7 +26,7 @@
     "@aws-sdk/url-parser": "3.374.0",
     "@dotenvx/dotenvx": "1.51.1",
     "@tanstack/react-query": "5.90.12",
-    "next": "16.0.8",
+    "next": "16.0.9",
     "next-auth": "5.0.0-beta.30",
     "react": "19.2.1",
     "react-dom": "19.2.1",
