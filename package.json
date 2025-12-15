@@ -28,8 +28,8 @@
     "@tanstack/react-query": "5.90.12",
     "next": "16.0.9",
     "next-auth": "5.0.0-beta.30",
-    "react": "19.2.2",
-    "react-dom": "19.2.2",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
     "zod": "4.1.13"
   },
   "devDependencies": {
