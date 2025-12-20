@@ -1,5 +1,6 @@
 import { GetObjectCommand, S3ServiceException } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import { get as dotenvxGet } from '@dotenvx/dotenvx';
 
 import type { GetImagesErrorResponseObject, GetImagesSuccessResponseObject } from '../album/types/get-images';
 import { objectActions } from './object-actions';
@@ -40,7 +41,7 @@ export async function fetchImageUrls(params: {
     const urls = await Promise.all(
       keys.map((key) => {
         const command = new GetObjectCommand({
-          Bucket: process.env.AWS_S3_BUCKET_NAME,
+          Bucket: dotenvxGet('AWS_S3_BUCKET_NAME'),
           Key: key,
         });
 

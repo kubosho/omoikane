@@ -1,18 +1,3 @@
-import { GetObjectCommand, S3Client, S3ServiceException } from '@aws-sdk/client-s3';
-import { afterAll, beforeAll, beforeEach, describe, expect, it, jest } from '@jest/globals';
-
-import type { GetImagesErrorResponseObject, GetImagesSuccessResponseObject } from '../album/types/get-images';
-
-// Prevent 'next-auth' execution side-effects.
-jest.unstable_mockModule('./s3-client-instance', () => ({
-  getS3Client: jest.fn<() => Promise<S3Client>>().mockResolvedValue({
-    config: {},
-    middlewareStack: jest.fn(),
-    destroy: jest.fn(),
-    send: jest.fn(),
-  } as unknown as S3Client),
-}));
-
 // Decouple from S3 Client implementation.
 jest.unstable_mockModule('@aws-sdk/s3-request-presigner', () => ({
   getSignedUrl: jest.fn().mockImplementation((_client: unknown, command: unknown) => {
@@ -24,6 +9,25 @@ jest.unstable_mockModule('@aws-sdk/s3-request-presigner', () => ({
     );
   }),
 }));
+
+jest.unstable_mockModule('@dotenvx/dotenvx', () => ({
+  get: jest.fn((key: string) => process.env[key]),
+}));
+
+// Prevent 'next-auth' execution side-effects.
+jest.unstable_mockModule('./s3-client-instance', () => ({
+  getS3Client: jest.fn<() => Promise<S3Client>>().mockResolvedValue({
+    config: {},
+    middlewareStack: jest.fn(),
+    destroy: jest.fn(),
+    send: jest.fn(),
+  } as unknown as S3Client),
+}));
+
+import { GetObjectCommand, S3Client, S3ServiceException } from '@aws-sdk/client-s3';
+import { afterAll, beforeAll, beforeEach, describe, expect, it, jest } from '@jest/globals';
+
+import type { GetImagesErrorResponseObject, GetImagesSuccessResponseObject } from '../album/types/get-images';
 
 const { fetchImageUrls } = await import('./image-url-fetcher');
 const { objectActions } = await import('./object-actions');
