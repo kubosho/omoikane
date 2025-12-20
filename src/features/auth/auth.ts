@@ -1,3 +1,4 @@
+import { get as dotenvxGet } from '@dotenvx/dotenvx';
 import type { Account, Session } from 'next-auth';
 import NextAuth from 'next-auth';
 import type { JWT } from 'next-auth/jwt';
@@ -29,11 +30,17 @@ export const providers: Provider[] = [
   },
 ];
 
-const allowedEmails = process.env.ALLOWED_EMAILS?.split(',').map((email) => email.trim()) ?? [];
+const allowedEmails =
+  dotenvxGet('ALLOWED_EMAILS')
+    ?.split(',')
+    .map((email) => email.trim()) ?? [];
 
 const config = {
   providers: [
     Cognito({
+      clientId: dotenvxGet('AUTH_COGNITO_ID'),
+      clientSecret: dotenvxGet('AUTH_COGNITO_SECRET'),
+      issuer: dotenvxGet('AUTH_COGNITO_ISSUER'),
       authorization: {
         params: {
           identity_provider: 'Google',
@@ -59,9 +66,7 @@ const config = {
 
       // AllowedEmails is empty, access is denied by default.
       if (allowedEmails.length === 0) {
-        console.warn(
-          '[auth] ALLOWED_EMAILS is empty: denying access to all users. Check environment configuration.',
-        );
+        console.warn('[auth] ALLOWED_EMAILS is empty: denying access to all users. Check environment configuration.');
 
         return false;
       }

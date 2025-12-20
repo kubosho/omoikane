@@ -16,7 +16,6 @@ const customJestConfig = {
   coverageProvider: 'v8',
   // see: https://jestjs.io/docs/next/configuration#extensionstotreatasesm-arraystring
   extensionsToTreatAsEsm: ['.ts', '.tsx'],
-  testEnvironment: 'jest-environment-jsdom',
 };
 
 export default createJestConfig(customJestConfig);

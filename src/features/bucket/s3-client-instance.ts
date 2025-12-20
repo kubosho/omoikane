@@ -1,5 +1,6 @@
 import { S3Client } from '@aws-sdk/client-s3';
 import { fromCognitoIdentityPool } from '@aws-sdk/credential-providers';
+import { get as dotenvxGet } from '@dotenvx/dotenvx';
 
 import { auth } from '../auth/auth';
 
@@ -17,17 +18,18 @@ export async function getS3Client(): Promise<S3Client> {
     throw new Error('No authenticated session or ID token available');
   }
 
-  const userPoolId = process.env.AUTH_COGNITO_ISSUER?.split('/').pop();
+  const issuer = dotenvxGet('AUTH_COGNITO_ISSUER');
+  const userPoolId = issuer?.split('/').pop();
   if (userPoolId == null || userPoolId === '') {
     throw new Error('AUTH_COGNITO_ISSUER environment variable is not set');
   }
 
-  const identityPoolId = process.env.COGNITO_IDENTITY_POOL_ID;
+  const identityPoolId = dotenvxGet('COGNITO_IDENTITY_POOL_ID');
   if (identityPoolId == null || identityPoolId === '') {
     throw new Error('COGNITO_IDENTITY_POOL_ID environment variable is not set');
   }
 
-  const region = process.env.AWS_REGION_NAME;
+  const region = dotenvxGet('AWS_REGION_NAME');
   if (region == null || region === '') {
     throw new Error('AWS_REGION_NAME environment variable is not set');
   }
