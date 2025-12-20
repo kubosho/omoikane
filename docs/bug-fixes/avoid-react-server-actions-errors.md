@@ -37,7 +37,7 @@ AUTH_TRUST_HOSTとAUTH_URLは必要ないはず：
 
 ## 原因
 
-- Vercelでは `process.env` から直接読み取ると暗号化された値（`encrypted:...`）が返される
+- Vercelで `process.env` から環境変数を読み取ると暗号化された値（`encrypted:...`）が返される
   - dotenvxの `get()` メソッドを使用することで、ランタイム上で復号された値を取得できる
 
 ## 対応方法
@@ -49,8 +49,11 @@ AUTH_TRUST_HOSTとAUTH_URLは必要ないはず：
 
 - src/features/auth/auth.ts
 - src/features/auth/server-actions.ts
+- src/features/bucket/image-url-fetcher.ts
+- src/features/bucket/image-url-fetcher.test.ts
 - src/features/bucket/object-actions.ts
 - src/features/bucket/s3-client-instance.ts
+- src/features/bucket/s3-client-instance.test.ts
 
 ## 留意事項
 
@@ -60,4 +63,8 @@ Next.jsのredirect処理は以下の内容を留意して実装する必要が�
 > - redirect throws an error so it should be called outside the try block when using try/catch statements.
 > - redirect can be called in Client Components during the rendering process but not in event handlers. You can use the useRouter hook instead.
 
-またVercel側でAUTH_SECRETは正しく設定されている。なぜならdotenvxを使って `.env` の内容をVercel側で読み込むようにしているため。
+またVercel側でAUTH_SECRETは正しく設定されている。dotenvxを使って `.env` の内容をVercel側で読み込むようにしているため。
+
+## 関連リンク
+
+- [Use dotenvx with Vercel | dotenvx](https://dotenvx.com/docs/platforms/vercel)
