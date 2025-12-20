@@ -1,14 +1,17 @@
-import { afterEach, beforeEach, describe, expect, it, jest } from '@jest/globals';
-import type { Session } from 'next-auth';
+jest.unstable_mockModule('@aws-sdk/credential-providers', () => ({
+  fromCognitoIdentityPool: jest.fn(),
+}));
 
-// Hoist mock for ESM compatibility.
+jest.unstable_mockModule('@dotenvx/dotenvx', () => ({
+  get: jest.fn((key: string) => process.env[key]),
+}));
+
 jest.unstable_mockModule('../auth/auth', () => ({
   auth: jest.fn(),
 }));
 
-jest.unstable_mockModule('@aws-sdk/credential-providers', () => ({
-  fromCognitoIdentityPool: jest.fn(),
-}));
+import { afterEach, beforeEach, describe, expect, it, jest } from '@jest/globals';
+import type { Session } from 'next-auth';
 
 describe('S3 Client Instance', () => {
   const ORIGINAL_ENV = process.env;

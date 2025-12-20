@@ -9,6 +9,7 @@ import {
   type PutObjectCommandOutput,
   S3ServiceException,
 } from '@aws-sdk/client-s3';
+import { get as dotenvxGet } from '@dotenvx/dotenvx';
 
 import { getS3Client } from './s3-client-instance';
 
@@ -25,7 +26,7 @@ class S3ObjectActions implements ObjectActions {
     const client = await getS3Client();
 
     const command = new PutObjectCommand({
-      Bucket: process.env.AWS_S3_BUCKET_NAME,
+      Bucket: dotenvxGet('AWS_S3_BUCKET_NAME'),
       Key: filename,
       Body: body,
     });
@@ -47,7 +48,7 @@ class S3ObjectActions implements ObjectActions {
     const client = await getS3Client();
 
     const command = new GetObjectCommand({
-      Bucket: process.env.AWS_S3_BUCKET_NAME,
+      Bucket: dotenvxGet('AWS_S3_BUCKET_NAME'),
       Key: filename,
     });
 
@@ -69,7 +70,7 @@ class S3ObjectActions implements ObjectActions {
     const client = await getS3Client();
 
     const command = new ListObjectsV2Command({
-      Bucket: process.env.AWS_S3_BUCKET_NAME,
+      Bucket: dotenvxGet('AWS_S3_BUCKET_NAME'),
       ContinuationToken: startingAfter,
       MaxKeys: limit,
     });
@@ -92,7 +93,7 @@ class S3ObjectActions implements ObjectActions {
     const client = await getS3Client();
 
     const command = new DeleteObjectCommand({
-      Bucket: process.env.AWS_S3_BUCKET_NAME,
+      Bucket: dotenvxGet('AWS_S3_BUCKET_NAME'),
       Key: filename,
     });
 

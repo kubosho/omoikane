@@ -9,8 +9,14 @@
 .next
 out
 
+# Vercel
+.vercel/
+
 # Direnv configuration
 .envrc
+
+# Dotenv files
+.env.local
 
 # Dotenv private keys file
 .env.keys
