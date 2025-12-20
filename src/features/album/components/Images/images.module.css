@@ -1,6 +1,9 @@
 .imageItems {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(max(calc(var(--spacing) * 80), calc(25% - calc(var(--spacing) * 2))), 1fr));
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(max(calc(var(--spacing) * 80), calc(25% - calc(var(--spacing) * 2))), 1fr)
+  );
   gap: calc(var(--spacing) * 2);
 }
 
