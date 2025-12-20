@@ -16,8 +16,13 @@ React Server Error側の処理が何か上手くいっていないように見�
 
 ## 前提
 
+- **デバッグログに秘匿すべきURLを含まない**
+- ローカル環境では問題なく認証フローが動作する
 - Vercel側には環境変数 `DOTENV_PRIVATE_KEY` を登録しており、デプロイログにも複合できているログが流れている
-- `AUTH_COGNITO_ISSUER` の形式は問題ない（`dotenvx decrypt` を実行して確認した）
+- `dotenvx decrypt` を実行した結果 `.env` で設定されている環境変数の値には問題がないように見える
+- Catch-all segmentsのディレクトリ名はなんでもよく `src/app/api/auth/[...auth]/route.ts` のままでも問題ない
+  - > Dynamic Segments can be extended to catch-all subsequent segments by adding an ellipsis inside the brackets [...folderName]. For example, app/shop/[...slug]/page.js will match /shop/clothes, but also /shop/clothes/tops, /shop/clothes/tops/t-shirts, and so on.
+  - > <https://nextjs.org/docs/app/api-reference/file-conventions/dynamic-routes>
 - Auth.jsはメンテナンスモードに入ったため、他のライブラリに置き換える予定。そのためAuth.jsの挙動に任せる方法で修正はしたくない
   - Auth.jsの置き換えは一旦考えない
 
@@ -29,6 +34,23 @@ AUTH_TRUST_HOSTとAUTH_URLは必要ないはず：
 > When deploying your application behind a reverse proxy, you’ll need to set AUTH_TRUST_HOST equal to true. This tells Auth.js to trust the X-Forwarded-Host header from the reverse proxy. Auth.js will automatically infer this to be true if we detect the environment variable indicating that your application is running on one of the supported hosting providers. Currently VERCEL and CF_PAGES (Cloudflare Pages) are supported.
 > AUTH_URL
 > This environment variable is mostly unnecessary with v5 as the host is inferred from the request headers. However, if you are using a different base path, you can set this environment variable as well. For example, AUTH_URL=<http://localhost:3000/web/auth> or AUTH_URL=<https://company.com/app1/auth>
+
+## 原因
+
+- Vercelでは `process.env` から直接読み取ると暗号化された値（`encrypted:...`）が返される
+  - dotenvxの `get()` メソッドを使用することで、ランタイム上で復号された値を取得できる
+
+## 対応方法
+
+1. dotenvxのインポートを追加
+2. `process.env` をランタイム上で動くコードで使っている箇所を `dotenvx.get()` にすべて置き換える
+
+### 対象ファイル
+
+- src/features/auth/auth.ts
+- src/features/auth/server-actions.ts
+- src/features/bucket/object-actions.ts
+- src/features/bucket/s3-client-instance.ts
 
 ## 留意事項
 
