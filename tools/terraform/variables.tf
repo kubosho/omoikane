@@ -32,3 +32,9 @@ variable "port" {
   type        = number
   default     = 45537
 }
+
+variable "production_domain" {
+  description = "Production domain for Cognito callback URLs"
+  type        = string
+  default     = "omoikane.kubosho.com"
+}

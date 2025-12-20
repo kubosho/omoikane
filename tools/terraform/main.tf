@@ -49,13 +49,19 @@ resource "aws_cognito_user_pool_client" "client" {
   generate_secret = true
 
   supported_identity_providers = ["COGNITO", "Google"]
-  
+
   allowed_oauth_flows_user_pool_client = true
   allowed_oauth_flows                  = ["code"]
   allowed_oauth_scopes                 = ["email", "openid"]
-  
-  callback_urls = ["http://localhost:${var.port}/api/auth/callback/cognito"]
-  logout_urls   = ["http://localhost:${var.port}"]
+
+  callback_urls = [
+    "http://localhost:${var.port}/api/auth/callback/cognito",
+    "https://${var.production_domain}/api/auth/callback/cognito"
+  ]
+  logout_urls = [
+    "http://localhost:${var.port}",
+    "https://${var.production_domain}"
+  ]
 
   depends_on = [aws_cognito_identity_provider.google]
 }

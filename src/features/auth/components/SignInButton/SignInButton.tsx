@@ -1,6 +1,6 @@
 'use client';
 
-import { redirect, RedirectType } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useCallback } from 'react';
 
 import { handleSignIn } from '../../server-actions';
@@ -10,10 +10,12 @@ type Props = {
 };
 
 export function SignInButton({ className }: Props): React.JSX.Element {
+  const router = useRouter();
+
   const handleSignInAction = useCallback(async () => {
     const redirectUrl = await handleSignIn('cognito');
-    redirect(redirectUrl, RedirectType.push);
-  }, []);
+    router.push(redirectUrl);
+  }, [router]);
 
   return (
     <form action={handleSignInAction} className={className}>
