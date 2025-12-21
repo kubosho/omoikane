@@ -7,23 +7,7 @@ import { Images } from '../features/album/components/Images';
 import { ImageUploadButton } from '../features/album/components/ImageUploadButton';
 import { auth } from '../features/auth/auth';
 import { SignInButton } from '../features/auth/components/SignInButton';
-import { SESSION_EXPIRED_TIME_IN_SECONDS } from '../features/auth/session-expired-time';
-import { fetchImageUrls } from '../features/bucket/image-url-fetcher';
 import { TanstackQueryClientProvider } from '../lib/TanstackQueryClientProvider';
-
-type Contents =
-  | {
-      imageUrls: never[];
-      nextToken: null;
-      isError: true;
-      errorReason: string;
-    }
-  | {
-      imageUrls: string[];
-      nextToken: string | null;
-      isError: false;
-      errorReason: null;
-    };
 
 type Props = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
@@ -40,31 +24,11 @@ export const metadata: Metadata = {
   title: 'omoikane',
 };
 
-async function getContents(): Promise<Contents> {
-  const result = await fetchImageUrls({ limit: 20, secondsToExpire: SESSION_EXPIRED_TIME_IN_SECONDS });
-  if ('urls' in result) {
-    return {
-      imageUrls: result.urls,
-      nextToken: result.nextToken ?? null,
-      isError: false,
-      errorReason: null,
-    };
-  }
-
-  return {
-    imageUrls: [],
-    nextToken: null,
-    isError: true,
-    errorReason: result.message,
-  };
-}
-
 export default async function IndexPage(props: Props): Promise<React.JSX.Element> {
   const searchParams = await props.searchParams;
   const error = searchParams.error;
 
   const session = await auth();
-  const { imageUrls, nextToken } = await getContents();
 
   let errorMessage = '';
   if (error != null) {
@@ -102,7 +66,7 @@ export default async function IndexPage(props: Props): Promise<React.JSX.Element
               </div>
               <FileUpload.Root accept="image/*" maxFiles={IMAGE_UPLOAD_LIMIT} className="flex-1">
                 <FileUpload.HiddenInput />
-                <Images imageUrls={imageUrls} nextToken={nextToken} />
+                <Images />
               </FileUpload.Root>
             </div>
           </TanstackQueryClientProvider>

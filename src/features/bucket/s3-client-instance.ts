@@ -4,6 +4,12 @@ import { get as dotenvxGet } from '@dotenvx/dotenvx';
 
 import { auth } from '../auth/auth';
 
+// Execute the function at the module scope to avoid multiple decryptions
+const issuer = dotenvxGet('AUTH_COGNITO_ISSUER');
+const userPoolId = issuer?.split('/').pop();
+const identityPoolId = dotenvxGet('COGNITO_IDENTITY_POOL_ID');
+const region = dotenvxGet('AWS_REGION_NAME');
+
 /**
  * Get S3 client with temporary credentials from Cognito Identity Pool.
  * This function must be called in a server context where Auth.js session is available.
@@ -18,25 +24,21 @@ export async function getS3Client(): Promise<S3Client> {
     throw new Error('No authenticated session or ID token available');
   }
 
-  const issuer = dotenvxGet('AUTH_COGNITO_ISSUER');
-  const userPoolId = issuer?.split('/').pop();
   if (userPoolId == null || userPoolId === '') {
     throw new Error('AUTH_COGNITO_ISSUER environment variable is not set');
   }
 
-  const identityPoolId = dotenvxGet('COGNITO_IDENTITY_POOL_ID');
   if (identityPoolId == null || identityPoolId === '') {
     throw new Error('COGNITO_IDENTITY_POOL_ID environment variable is not set');
   }
 
-  const region = dotenvxGet('AWS_REGION_NAME');
   if (region == null || region === '') {
     throw new Error('AWS_REGION_NAME environment variable is not set');
   }
 
   const providerName = `cognito-idp.${region}.amazonaws.com/${userPoolId}`;
 
-  return new S3Client({
+  const client = new S3Client({
     region,
     credentials: fromCognitoIdentityPool({
       identityPoolId,
@@ -46,4 +48,6 @@ export async function getS3Client(): Promise<S3Client> {
       },
     }),
   });
+
+  return client;
 }

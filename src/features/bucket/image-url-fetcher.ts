@@ -6,6 +6,9 @@ import type { GetImagesErrorResponseObject, GetImagesSuccessResponseObject } fro
 import { objectActions } from './object-actions';
 import { getS3Client } from './s3-client-instance';
 
+// Execute the function at the module scope to avoid multiple decryptions
+const bucketName = dotenvxGet('AWS_S3_BUCKET_NAME');
+
 async function fetchFileKeys(params: {
   limit: number;
   nextToken?: string;
@@ -34,14 +37,16 @@ export async function fetchImageUrls(params: {
 }): Promise<GetImagesSuccessResponseObject | GetImagesErrorResponseObject> {
   try {
     const client = await getS3Client();
+
     const { keys, nextToken } = await fetchFileKeys({
       limit: params.limit,
       nextToken: params.nextToken,
     });
+
     const urls = await Promise.all(
       keys.map((key) => {
         const command = new GetObjectCommand({
-          Bucket: dotenvxGet('AWS_S3_BUCKET_NAME'),
+          Bucket: bucketName,
           Key: key,
         });
 

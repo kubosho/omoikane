@@ -11,11 +11,6 @@ import { imagesQueryKey } from '../../utils/images-query-key';
 import { TrashButton } from '../TrashButton';
 import styles from './images.module.css';
 
-type Props = {
-  imageUrls: string[];
-  nextToken: string | null;
-};
-
 async function fetchImages(params: {
   nextToken: string | null;
 }): Promise<{ urls: string[]; nextToken: string | null }> {
@@ -49,7 +44,7 @@ const ImagesLoadingAnnouncer = dynamic(
   { ssr: false },
 );
 
-export function Images({ imageUrls: initialImageUrls, nextToken }: Props): React.JSX.Element {
+export function Images(): React.JSX.Element {
   const previousImagesCountRef = useRef(0);
   const fetchedImagesCountRef = useRef(0);
 
@@ -63,10 +58,6 @@ export function Images({ imageUrls: initialImageUrls, nextToken }: Props): React
       }
 
       return { nextToken: lastPage.nextToken };
-    },
-    initialData: {
-      pages: [{ urls: initialImageUrls, nextToken: nextToken }],
-      pageParams: [{ nextToken: null }],
     },
     initialPageParam: { nextToken: null } as { nextToken: string | null },
     refetchOnWindowFocus: false,
@@ -86,8 +77,8 @@ export function Images({ imageUrls: initialImageUrls, nextToken }: Props): React
     },
   );
 
-  const allImageUrls = data?.pages.flatMap((page) => page.urls) ?? initialImageUrls;
-  const imageData = allImageUrls.map((imageUrl) => {
+  const allImageUrls = data?.pages.flatMap((page) => page.urls);
+  const imageData = allImageUrls?.map((imageUrl) => {
     const url = new URL(imageUrl);
     const name = url.pathname.slice(1);
 
@@ -96,7 +87,7 @@ export function Images({ imageUrls: initialImageUrls, nextToken }: Props): React
       url: imageUrl,
     };
   });
-  const imagesCount = imageData.length;
+  const imagesCount = imageData?.length ?? 0;
 
   if (isFetching) {
     fetchedImagesCountRef.current = 0;
@@ -115,7 +106,7 @@ export function Images({ imageUrls: initialImageUrls, nextToken }: Props): React
     <div>
       <ImagesLoadingAnnouncer isFetching={isFetching} fetchedImagesCount={fetchedImagesCountRef.current} />
       <ul className={styles.imageItems}>
-        {imageData.map(({ name, url }, index) => (
+        {imageData?.map(({ name, url }, index) => (
           <li key={index} className={styles.imageItem}>
             <button type="button" className={styles.imageAction}>
               <img src={url} alt="" width="auto" height="300" className={styles.image} />

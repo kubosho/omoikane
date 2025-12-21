@@ -20,13 +20,16 @@ interface ObjectActions {
   deleteObject: (params: { filename: string }) => Promise<DeleteObjectCommandOutput>;
 }
 
+// Execute the function at the module scope to avoid multiple decryptions.
+const bucket = dotenvxGet('AWS_S3_BUCKET_NAME');
+
 class S3ObjectActions implements ObjectActions {
   async upsertObject(params: { filename: string; body: Uint8Array }): Promise<PutObjectCommandOutput> {
     const { filename, body } = params;
     const client = await getS3Client();
 
     const command = new PutObjectCommand({
-      Bucket: dotenvxGet('AWS_S3_BUCKET_NAME'),
+      Bucket: bucket,
       Key: filename,
       Body: body,
     });
@@ -48,7 +51,7 @@ class S3ObjectActions implements ObjectActions {
     const client = await getS3Client();
 
     const command = new GetObjectCommand({
-      Bucket: dotenvxGet('AWS_S3_BUCKET_NAME'),
+      Bucket: bucket,
       Key: filename,
     });
 
@@ -70,7 +73,7 @@ class S3ObjectActions implements ObjectActions {
     const client = await getS3Client();
 
     const command = new ListObjectsV2Command({
-      Bucket: dotenvxGet('AWS_S3_BUCKET_NAME'),
+      Bucket: bucket,
       ContinuationToken: startingAfter,
       MaxKeys: limit,
     });
@@ -93,7 +96,7 @@ class S3ObjectActions implements ObjectActions {
     const client = await getS3Client();
 
     const command = new DeleteObjectCommand({
-      Bucket: dotenvxGet('AWS_S3_BUCKET_NAME'),
+      Bucket: bucket,
       Key: filename,
     });
 
