@@ -20,7 +20,7 @@ const region = dotenvxGet('AWS_REGION_NAME');
 export async function getS3Client(): Promise<S3Client> {
   const session = await auth();
 
-  if (session == null || session.idToken == null) {
+  if (session == null || session.token == null) {
     throw new Error('No authenticated session or ID token available');
   }
 
@@ -44,7 +44,7 @@ export async function getS3Client(): Promise<S3Client> {
       identityPoolId,
       clientConfig: { region },
       logins: {
-        [providerName]: session.idToken,
+        [providerName]: session.token,
       },
     }),
   });

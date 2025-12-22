@@ -36,7 +36,7 @@ describe('S3 Client Instance', () => {
 
     mockAuth.mockResolvedValue({
       user: { email: 'test@example.com' },
-      idToken: 'valid-id-token',
+      token: 'valid-id-token',
       expires: '2099-01-01',
     });
 
@@ -68,7 +68,7 @@ describe('S3 Client Instance', () => {
     const mockAuth = auth as unknown as jest.MockedFunction<() => Promise<Session | null>>;
     mockAuth.mockResolvedValue({
       user: { email: 'test@example.com' },
-      idToken: 'valid-id-token',
+      token: 'valid-id-token',
       expires: '2099-01-01',
     });
 
@@ -86,7 +86,7 @@ describe('S3 Client Instance', () => {
     const mockAuth = auth as unknown as jest.MockedFunction<() => Promise<Session | null>>;
     mockAuth.mockResolvedValue({
       user: { email: 'test@example.com' },
-      idToken: 'valid-id-token',
+      token: 'valid-id-token',
       expires: '2099-01-01',
     });
 
@@ -104,7 +104,7 @@ describe('S3 Client Instance', () => {
     const mockAuth = auth as unknown as jest.MockedFunction<() => Promise<Session | null>>;
     mockAuth.mockResolvedValue({
       user: { email: 'test@example.com' },
-      idToken: 'valid-id-token',
+      token: 'valid-id-token',
       expires: '2099-01-01',
     });
 
