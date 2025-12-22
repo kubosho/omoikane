@@ -7,7 +7,6 @@ import {
   type ListObjectsV2CommandOutput,
   PutObjectCommand,
   type PutObjectCommandOutput,
-  S3ServiceException,
 } from '@aws-sdk/client-s3';
 import { get as dotenvxGet } from '@dotenvx/dotenvx';
 
@@ -34,16 +33,8 @@ class S3ObjectActions implements ObjectActions {
       Body: body,
     });
 
-    try {
-      const data = await client.send(command);
-      return data;
-    } catch (error) {
-      if (error instanceof S3ServiceException) {
-        throw new Error('putObject failed', { cause: error });
-      }
-
-      throw new Error('Unexpected S3 failure', { cause: error });
-    }
+    const data = await client.send(command);
+    return data;
   }
 
   async readObject(params: { filename: string }): Promise<GetObjectCommandOutput> {
@@ -55,17 +46,8 @@ class S3ObjectActions implements ObjectActions {
       Key: filename,
     });
 
-    try {
-      const data = await client.send(command);
-      return data;
-    } catch (error) {
-      if (error instanceof S3ServiceException) {
-        console.error('getObject failed', { key: filename, code: error.name, message: error.message });
-        throw error;
-      }
-
-      throw new Error('Unexpected S3 failure', { cause: error });
-    }
+    const data = await client.send(command);
+    return data;
   }
 
   async readObjects(params: { limit: number; startingAfter?: string }): Promise<ListObjectsV2CommandOutput> {
@@ -78,17 +60,8 @@ class S3ObjectActions implements ObjectActions {
       MaxKeys: limit,
     });
 
-    try {
-      const data = await client.send(command);
-      return data;
-    } catch (error) {
-      if (error instanceof S3ServiceException) {
-        console.error('listObjectsV2 failed', { code: error.name, message: error.message });
-        throw error;
-      }
-
-      throw new Error('Unexpected S3 failure', { cause: error });
-    }
+    const data = await client.send(command);
+    return data;
   }
 
   async deleteObject(params: { filename: string }): Promise<DeleteObjectCommandOutput> {
@@ -100,17 +73,8 @@ class S3ObjectActions implements ObjectActions {
       Key: filename,
     });
 
-    try {
-      const data = await client.send(command);
-      return data;
-    } catch (error) {
-      if (error instanceof S3ServiceException) {
-        console.error('deleteObject failed', { key: filename, code: error.name, message: error.message });
-        throw error;
-      }
-
-      throw new Error('Unexpected S3 failure', { cause: error });
-    }
+    const data = await client.send(command);
+    return data;
   }
 }
 

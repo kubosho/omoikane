@@ -4,17 +4,29 @@ import NextAuth from 'next-auth';
 import type { JWT } from 'next-auth/jwt';
 import Cognito from 'next-auth/providers/cognito';
 
-// Extend Session type to include idToken
+import { cognitoTokensSchema } from './utils/cognito-tokens-schema';
+
+// Execute the function at the module scope to avoid multiple decryptions
+const allowedEmails = dotenvxGet('ALLOWED_EMAILS');
+const clientId = dotenvxGet('AUTH_COGNITO_ID');
+const clientSecret = dotenvxGet('AUTH_COGNITO_SECRET');
+const issuer = dotenvxGet('AUTH_COGNITO_ISSUER');
+const region = dotenvxGet('AWS_REGION_NAME');
+
 declare module 'next-auth' {
   interface Session {
-    idToken?: string;
+    error?: 'RefreshTokenError';
+    token?: string;
   }
 }
 
-// Extend JWT type to include idToken
 declare module 'next-auth/jwt' {
   interface JWT {
-    idToken?: string;
+    access_token?: string;
+    expires_at?: number;
+    error?: 'RefreshTokenError';
+    id_token?: string;
+    refresh_token?: string;
   }
 }
 
@@ -30,17 +42,14 @@ export const providers: Provider[] = [
   },
 ];
 
-const allowedEmails =
-  dotenvxGet('ALLOWED_EMAILS')
-    ?.split(',')
-    .map((email) => email.trim()) ?? [];
+const TOKEN_END_POINT = `https://omoikane.auth.${region}.amazoncognito.com/oauth2/token`;
 
 const config = {
   providers: [
     Cognito({
-      clientId: dotenvxGet('AUTH_COGNITO_ID'),
-      clientSecret: dotenvxGet('AUTH_COGNITO_SECRET'),
-      issuer: dotenvxGet('AUTH_COGNITO_ISSUER'),
+      clientId,
+      clientSecret,
+      issuer,
       authorization: {
         params: {
           identity_provider: 'Google',
@@ -64,27 +73,67 @@ const config = {
         return false;
       }
 
+      const emails = allowedEmails?.split(',').map((email) => email.trim()) ?? [];
       // AllowedEmails is empty, access is denied by default.
-      if (allowedEmails.length === 0) {
+      if (emails.length === 0) {
         console.warn('[auth] ALLOWED_EMAILS is empty: denying access to all users. Check environment configuration.');
 
         return false;
       }
 
-      return allowedEmails.includes(user.email);
+      return emails.includes(user.email);
     },
-    jwt({ token, account }: { token: JWT; account?: Account | null }) {
+    async jwt({ token, account }: { token: JWT; account?: Account | null }) {
       // Save ID token from Cognito on initial sign-in
-      if (account?.id_token != null && account.id_token !== '') {
-        token.idToken = account.id_token;
-      }
+      if (account != null) {
+        return {
+          ...token,
+          access_token: account.access_token,
+          id_token: account.id_token,
+          expires_at: account.expires_at,
+          refresh_token: account.refresh_token,
+        };
+      } else if (Date.now() < (token.expires_at ?? 0) * 1000) {
+        return token;
+      } else {
+        if (token.refresh_token == null || token.refresh_token === '') {
+          throw new TypeError('Missing refresh_token');
+        }
 
-      return token;
+        const credentials = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
+        const response = await fetch(TOKEN_END_POINT, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            Authorization: `Basic ${credentials}`,
+          },
+          body: new URLSearchParams({
+            grant_type: 'refresh_token',
+            refresh_token: token.refresh_token,
+          }),
+        });
+
+        const result = cognitoTokensSchema.safeParse(await response.json());
+        if (!result.success) {
+          console.error('Error refreshing access_token:', result.error);
+          token.error = 'RefreshTokenError';
+          return token;
+        }
+
+        const newToken = result.data;
+        return {
+          ...token,
+          access_token: newToken.access_token,
+          id_token: newToken.id_token,
+          expires_at: Math.floor(Date.now() / 1000 + newToken.expires_in),
+          refresh_token: token.refresh_token,
+        };
+      }
     },
     session({ session, token }: { session: Session; token: JWT }) {
       // Expose ID token to the session for server-side use
-      if (token.idToken != null && token.idToken !== '') {
-        session.idToken = token.idToken;
+      if (token.id_token != null && token.id_token !== '') {
+        session.token = token.id_token;
       }
 
       return session;

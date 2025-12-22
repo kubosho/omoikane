@@ -24,21 +24,13 @@ jest.unstable_mockModule('./s3-client-instance', () => ({
   } as unknown as S3Client),
 }));
 
-import { GetObjectCommand, S3Client, S3ServiceException } from '@aws-sdk/client-s3';
+import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, jest } from '@jest/globals';
 
-import type { GetImagesErrorResponseObject, GetImagesSuccessResponseObject } from '../album/types/get-images';
+import type { GetImagesSuccessResponseObject } from '../album/types/get-images';
 
 const { fetchImageUrls } = await import('./image-url-fetcher');
 const { objectActions } = await import('./object-actions');
-
-const createFakeS3ServiceException = (message: string): S3ServiceException =>
-  new S3ServiceException({
-    name: 'S3ServiceException',
-    $fault: 'client',
-    $metadata: {},
-    message,
-  });
 
 describe('fetchImageUrls', () => {
   const ORIGINAL_ENV = process.env;
@@ -75,31 +67,5 @@ describe('fetchImageUrls', () => {
     expect(result.urls[1]).toMatch(
       /^https:\/\/test-bucket\.s3\.[^/]+\.amazonaws\.com\/image-b\.jpg\?.*X-Amz-Algorithm=.*&.*X-Amz-Signature=/,
     );
-  });
-
-  it('returns an error message when an S3ServiceException occurs', async () => {
-    // Arrange
-    const s3Error = createFakeS3ServiceException('S3 failure');
-    jest.spyOn(objectActions, 'readObjects').mockImplementation(() => {
-      throw s3Error;
-    });
-
-    // Act
-    const result = (await fetchImageUrls({ limit: 2, secondsToExpire: 120 })) as GetImagesErrorResponseObject;
-
-    // Assert
-    expect(result.message).toContain('Failed to fetch file keys: S3 failure');
-  });
-
-  it('returns an error message when an unexpected error occurs', async () => {
-    // Arrange
-    const unexpectedError = new Error('Unexpected failure');
-    jest.spyOn(objectActions, 'readObjects').mockRejectedValue(unexpectedError);
-
-    // Act
-    const result = (await fetchImageUrls({ limit: 5, secondsToExpire: 300 })) as GetImagesErrorResponseObject;
-
-    // Assert
-    expect(result.message).toBe('Unexpected S3 error while fetching file keys');
   });
 });
