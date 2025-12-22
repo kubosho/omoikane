@@ -1,4 +1,4 @@
-import { GetObjectCommand, S3ServiceException } from '@aws-sdk/client-s3';
+import { GetObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { get as dotenvxGet } from '@dotenvx/dotenvx';
 
@@ -13,21 +13,13 @@ async function fetchFileKeys(params: {
   limit: number;
   nextToken?: string;
 }): Promise<{ keys: string[]; nextToken?: string }> {
-  try {
-    const response = await objectActions.readObjects({ limit: params.limit, startingAfter: params.nextToken });
-    const keys = response.Contents?.flatMap((item) => (item.Key && !item.Key.endsWith('/') ? [item.Key] : [])) ?? [];
+  const response = await objectActions.readObjects({ limit: params.limit, startingAfter: params.nextToken });
+  const keys = response.Contents?.flatMap((item) => (item.Key && !item.Key.endsWith('/') ? [item.Key] : [])) ?? [];
 
-    return {
-      keys,
-      nextToken: response.NextContinuationToken,
-    };
-  } catch (error) {
-    if (error instanceof S3ServiceException) {
-      throw new Error(`Failed to fetch file keys: ${error.message}`);
-    } else {
-      throw new Error('Unexpected S3 error while fetching file keys', { cause: error });
-    }
-  }
+  return {
+    keys,
+    nextToken: response.NextContinuationToken,
+  };
 }
 
 export async function fetchImageUrls(params: {
@@ -35,34 +27,26 @@ export async function fetchImageUrls(params: {
   nextToken?: string;
   secondsToExpire: number;
 }): Promise<GetImagesSuccessResponseObject | GetImagesErrorResponseObject> {
-  try {
-    const client = await getS3Client();
+  const client = await getS3Client();
 
-    const { keys, nextToken } = await fetchFileKeys({
-      limit: params.limit,
-      nextToken: params.nextToken,
-    });
+  const { keys, nextToken } = await fetchFileKeys({
+    limit: params.limit,
+    nextToken: params.nextToken,
+  });
 
-    const urls = await Promise.all(
-      keys.map((key) => {
-        const command = new GetObjectCommand({
-          Bucket: bucketName,
-          Key: key,
-        });
+  const urls = await Promise.all(
+    keys.map((key) => {
+      const command = new GetObjectCommand({
+        Bucket: bucketName,
+        Key: key,
+      });
 
-        return getSignedUrl(client, command, { expiresIn: params.secondsToExpire });
-      }),
-    );
+      return getSignedUrl(client, command, { expiresIn: params.secondsToExpire });
+    }),
+  );
 
-    return {
-      urls,
-      nextToken: nextToken ?? null,
-    };
-  } catch (error) {
-    if (error instanceof Error) {
-      return { message: error.message };
-    }
-
-    return { message: 'Unexpected error occurred while fetching image URLs.' };
-  }
+  return {
+    urls,
+    nextToken: nextToken ?? null,
+  };
 }
