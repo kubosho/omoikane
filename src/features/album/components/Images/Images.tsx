@@ -95,6 +95,7 @@ export function Images(): React.JSX.Element {
 
   if (previousImagesCountRef.current === 0) {
     // Initial load
+    fetchedImagesCountRef.current = imagesCount;
     previousImagesCountRef.current = imagesCount;
   } else if (!isFetching && previousImagesCountRef.current !== imagesCount) {
     // After fetching new images

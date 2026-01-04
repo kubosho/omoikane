@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 
 import type { UpsertImagesResponseObject } from '../../../../features/album/types/upsert-images';
+import { auth } from '../../../../features/auth/auth';
 import { objectActions } from '../../../../features/bucket/object-actions';
 
 // Don't want to use let.
@@ -14,6 +15,16 @@ const imageData = new WeakMap<Request, Uint8Array>();
  *    allowing for pure JSON exchanges.
  */
 export async function POST(request: Request): Promise<NextResponse<UpsertImagesResponseObject>> {
+  const session = await auth();
+  if (session?.user == null) {
+    return NextResponse.json(
+      {
+        message: 'Unauthorized',
+      },
+      { status: 401 },
+    );
+  }
+
   const contentType = request.headers.get('content-type');
   if (contentType == null) {
     return NextResponse.json(

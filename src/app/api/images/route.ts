@@ -1,12 +1,23 @@
 import { NextResponse } from 'next/server';
 
 import type { GetImagesResponseObject } from '../../../features/album/types/get-images';
+import { auth } from '../../../features/auth/auth';
 import { SESSION_EXPIRED_TIME_IN_SECONDS } from '../../../features/auth/session-expired-time';
 import { fetchImageUrls } from '../../../features/bucket/image-url-fetcher';
 
 const DEFAULT_LIMIT = 20 as const;
 
 export async function GET(request: Request): Promise<NextResponse<GetImagesResponseObject>> {
+  const session = await auth();
+  if (session?.user == null) {
+    return NextResponse.json(
+      {
+        message: 'Unauthorized',
+      },
+      { status: 401 },
+    );
+  }
+
   try {
     const { searchParams } = new URL(request.url);
 
@@ -55,7 +66,12 @@ export async function GET(request: Request): Promise<NextResponse<GetImagesRespo
     );
   } catch (error) {
     if (error instanceof Error) {
-      return NextResponse.json({ message: `Fetch failed: ${error.message}` }, { status: 500 });
+      return NextResponse.json(
+        {
+          message: `Fetch failed: ${error.message}`,
+        },
+        { status: 500 },
+      );
     }
 
     return NextResponse.json(
