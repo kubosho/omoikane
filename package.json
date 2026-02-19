@@ -53,8 +53,8 @@
     "@types/node": "24.10.13",
     "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3",
-    "@typescript-eslint/eslint-plugin": "8.54.0",
-    "@typescript-eslint/parser": "8.54.0",
+    "@typescript-eslint/eslint-plugin": "8.56.0",
+    "@typescript-eslint/parser": "8.56.0",
     "autoprefixer": "10.4.24",
     "eslint": "9.39.2",
     "eslint-config-prettier": "10.1.8",
@@ -76,7 +76,7 @@
     "tailwindcss": "4.1.18",
     "ts-jest": "29.4.6",
     "typescript": "5.9.3",
-    "typescript-eslint": "8.54.0",
+    "typescript-eslint": "8.56.0",
     "vite": "7.3.1"
   }
 }
