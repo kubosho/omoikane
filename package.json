@@ -16,7 +16,7 @@
     "storybook": "dotenvx run -- storybook dev -p 45538"
   },
   "dependencies": {
-    "@ark-ui/react": "5.31.0",
+    "@ark-ui/react": "5.32.0",
     "@aws-sdk/client-s3": "3.995.0",
     "@aws-sdk/credential-providers": "3.995.0",
     "@aws-sdk/hash-node": "3.374.0",
