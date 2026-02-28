@@ -20,7 +20,7 @@
     "@aws-sdk/client-s3": "3.996.0",
     "@aws-sdk/credential-providers": "3.996.0",
     "@aws-sdk/hash-node": "3.374.0",
-    "@aws-sdk/middleware-bucket-endpoint": "3.972.4",
+    "@aws-sdk/middleware-bucket-endpoint": "3.972.5",
     "@aws-sdk/protocol-http": "3.374.0",
     "@aws-sdk/s3-request-presigner": "3.996.0",
     "@aws-sdk/url-parser": "3.374.0",
