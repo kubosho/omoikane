@@ -1,6 +1,6 @@
 'use client';
 
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import Image from 'next/image';
 import { useCallback } from 'react';
 
@@ -28,24 +28,18 @@ async function deleteImage(filename: string): Promise<void> {
 
 export function TrashButton({ filename, className }: Props): React.JSX.Element {
   const queryClient = useQueryClient();
-  const { refetch } = useQuery({
-    queryKey: imagesQueryKey,
-    queryFn: () => deleteImage(filename),
-    enabled: false,
+  const { mutate } = useMutation({
+    mutationFn: () => deleteImage(filename),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: imagesQueryKey });
+    },
   });
 
   const handleDeleteImage = useCallback(() => {
-    const confirmed = confirm('Do you want to delete the image?');
-
-    if (confirmed) {
-      void refetch().then(async () => {
-        // FIXME: After deleting an image, the image list is refetch,
-        //        so multiple requests to S3 are each time an image is deleted.
-        //        We want to eliminate an extra requests.
-        await queryClient.invalidateQueries({ queryKey: imagesQueryKey });
-      });
+    if (confirm('Do you want to delete the image?')) {
+      mutate();
     }
-  }, []);
+  }, [mutate]);
 
   return (
     <button

@@ -61,57 +61,33 @@ describe('S3 Client Instance', () => {
     await expect(getS3Client()).rejects.toThrow('No authenticated session or ID token available');
   });
 
-  it('throws when AUTH_COGNITO_ISSUER is missing or empty', async () => {
+  it('throws at module load when AUTH_COGNITO_ISSUER is missing', async () => {
     // Arrange
     process.env.AUTH_COGNITO_ISSUER = '';
-    const { auth } = await import('../auth/auth');
-    const mockAuth = auth as unknown as jest.MockedFunction<() => Promise<Session | null>>;
-    mockAuth.mockResolvedValue({
-      user: { email: 'test@example.com' },
-      token: 'valid-id-token',
-      expires: '2099-01-01',
-    });
 
-    // Act
-    const { getS3Client } = await import('./s3-client-instance');
-
-    // Assert
-    await expect(getS3Client()).rejects.toThrow('AUTH_COGNITO_ISSUER environment variable is not set');
+    // Act & Assert
+    await expect(import('./s3-client-instance')).rejects.toThrow(
+      'AUTH_COGNITO_ISSUER environment variable is not set',
+    );
   });
 
-  it('throws when COGNITO_IDENTITY_POOL_ID is missing or empty', async () => {
+  it('throws at module load when COGNITO_IDENTITY_POOL_ID is missing', async () => {
     // Arrange
     delete process.env.COGNITO_IDENTITY_POOL_ID;
-    const { auth } = await import('../auth/auth');
-    const mockAuth = auth as unknown as jest.MockedFunction<() => Promise<Session | null>>;
-    mockAuth.mockResolvedValue({
-      user: { email: 'test@example.com' },
-      token: 'valid-id-token',
-      expires: '2099-01-01',
-    });
 
-    // Act
-    const { getS3Client } = await import('./s3-client-instance');
-
-    // Assert
-    await expect(getS3Client()).rejects.toThrow('COGNITO_IDENTITY_POOL_ID environment variable is not set');
+    // Act & Assert
+    await expect(import('./s3-client-instance')).rejects.toThrow(
+      'COGNITO_IDENTITY_POOL_ID environment variable is not set',
+    );
   });
 
-  it('throws when AWS_REGION_NAME is missing or empty', async () => {
+  it('throws at module load when AWS_REGION_NAME is missing', async () => {
     // Arrange
     process.env.AWS_REGION_NAME = '';
-    const { auth } = await import('../auth/auth');
-    const mockAuth = auth as unknown as jest.MockedFunction<() => Promise<Session | null>>;
-    mockAuth.mockResolvedValue({
-      user: { email: 'test@example.com' },
-      token: 'valid-id-token',
-      expires: '2099-01-01',
-    });
 
-    // Act
-    const { getS3Client } = await import('./s3-client-instance');
-
-    // Assert
-    await expect(getS3Client()).rejects.toThrow('AWS_REGION_NAME environment variable is not set');
+    // Act & Assert
+    await expect(import('./s3-client-instance')).rejects.toThrow(
+      'AWS_REGION_NAME environment variable is not set',
+    );
   });
 });

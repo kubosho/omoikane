@@ -10,13 +10,19 @@ const userPoolId = issuer?.split('/').pop();
 const identityPoolId = dotenvxGet('COGNITO_IDENTITY_POOL_ID');
 const region = dotenvxGet('AWS_REGION_NAME');
 
-/**
- * Get S3 client with temporary credentials from Cognito Identity Pool.
- * This function must be called in a server context where Auth.js session is available.
- *
- * @returns S3Client instance with temporary credentials.
- * @throws Error when session is invalid or environment variables are missing.
- */
+// Fail fast at module load rather than on every request
+if (userPoolId == null || userPoolId === '') {
+  throw new Error('AUTH_COGNITO_ISSUER environment variable is not set');
+}
+if (identityPoolId == null || identityPoolId === '') {
+  throw new Error('COGNITO_IDENTITY_POOL_ID environment variable is not set');
+}
+if (region == null || region === '') {
+  throw new Error('AWS_REGION_NAME environment variable is not set');
+}
+
+const providerName = `cognito-idp.${region}.amazonaws.com/${userPoolId}`;
+
 export async function getS3Client(): Promise<S3Client> {
   const session = await auth();
 
@@ -24,21 +30,7 @@ export async function getS3Client(): Promise<S3Client> {
     throw new Error('No authenticated session or ID token available');
   }
 
-  if (userPoolId == null || userPoolId === '') {
-    throw new Error('AUTH_COGNITO_ISSUER environment variable is not set');
-  }
-
-  if (identityPoolId == null || identityPoolId === '') {
-    throw new Error('COGNITO_IDENTITY_POOL_ID environment variable is not set');
-  }
-
-  if (region == null || region === '') {
-    throw new Error('AWS_REGION_NAME environment variable is not set');
-  }
-
-  const providerName = `cognito-idp.${region}.amazonaws.com/${userPoolId}`;
-
-  const client = new S3Client({
+  return new S3Client({
     region,
     credentials: fromCognitoIdentityPool({
       identityPoolId,
@@ -48,6 +40,4 @@ export async function getS3Client(): Promise<S3Client> {
       },
     }),
   });
-
-  return client;
 }
