@@ -11,7 +11,7 @@
   position: relative;
   height: calc(var(--spacing) * 75);
   min-width: calc(var(--spacing) * 50);
-  border: 1px solid var(--color-beige-300);
+  border: 1px solid var(--color-primary-accent);
 }
 
 .imageItem:hover .imageContextPanel,
@@ -55,7 +55,7 @@
   align-self: end;
   justify-self: end;
   grid-row: 2;
-  color: var(--color-monotone-100);
+  color: var(--color-monotone-50);
   font-weight: bold;
   z-index: 1;
 }
