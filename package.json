@@ -40,7 +40,7 @@
     "@secretlint/secretlint-rule-preset-recommend": "11.3.1",
     "@storybook/addon-actions": "9.0.8",
     "@storybook/addon-links": "10.2.19",
-    "@storybook/addon-styling-webpack": "3.0.0",
+    "@storybook/addon-styling-webpack": "3.0.1",
     "@storybook/builder-vite": "10.2.19",
     "@storybook/nextjs": "10.2.19",
     "@storybook/testing-library": "0.2.2",
