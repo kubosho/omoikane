@@ -36,7 +36,7 @@
     "@eslint/js": "9.39.5",
     "@jest/globals": "30.5.1",
     "@kubosho/configs": "6.5.39",
-    "@o2project/design-system": "1.5.66",
+    "@o2project/design-system": "1.5.67",
     "@secretlint/secretlint-rule-preset-recommend": "13.0.5",
     "@storybook/addon-actions": "9.0.8",
     "@storybook/addon-links": "10.6.0",
