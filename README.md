@@ -17,6 +17,19 @@
 DOTENV_PRIVATE_KEY="your_private_key_here"
 ```
 
+### ログインできるアカウントの追加
+
+ログインできるのは、環境変数 `ALLOWED_EMAILS` に登録したメールアドレスのアカウントだけです。`ALLOWED_EMAILS` が空の場合は、どのアカウントもログインできません。
+
+アカウントを追加するときは、今の値を確認してから、新しいメールアドレスをカンマ区切りで足して設定し直します。`dotenvx set` は値を上書きするため、既存のメールアドレスも含めて指定します。
+
+```bash
+npx dotenvx get ALLOWED_EMAILS -f .env
+npx dotenvx set ALLOWED_EMAILS "existing@example.com,new@example.com" -f .env
+```
+
+`.env` を変更したあとは、開発サーバーを再起動すると反映されます。
+
 ### AWSの設定
 
 AWSのリソースを管理するには、AWS CLIのプロファイルとリージョンを設定する必要があります。環境変数を自動で読み込めるように、[direnv](https://direnv.net/) の利用をお勧めします。
