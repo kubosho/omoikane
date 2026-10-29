@@ -1,77 +1,77 @@
 # omoikane (思金)
 
-Blog image management tool for <https://blog.kubosho.com>.
+<https://blog.kubosho.com> で使う画像を管理するツールです。
 
-## Setup
+## セットアップ
 
-### Environment Variables
+### 環境変数
 
-This project uses [dotenvx](https://dotenvx.com/) to manage encrypted environment variables. The `.env` file is encrypted and committed to the repository.
+このプロジェクトでは、[dotenvx](https://dotenvx.com/) を使って環境変数を暗号化して管理しています。`.env` ファイルは暗号化した状態でリポジトリにコミットしています。
 
-To run the application, you need the decryption key.
+アプリケーションを動かすには、復号用の鍵が必要です。
 
-1. Obtain the `DOTENV_PRIVATE_KEY` from the project administrator.
-2. Create a `.env.keys` file in the root directory, and add the key to the file:
+1. プロジェクト管理者から `DOTENV_PRIVATE_KEY` を受け取ります。
+2. ルートディレクトリに `.env.keys` ファイルを作り、鍵を書き込みます。
 
 ```bash
 DOTENV_PRIVATE_KEY="your_private_key_here"
 ```
 
-### AWS Configuration
+### AWSの設定
 
-To manage AWS resources, you need to configure the AWS CLI profile and region. We recommend using [direnv](https://direnv.net/) to automatically load environment variables.
+AWSのリソースを管理するには、AWS CLIのプロファイルとリージョンを設定する必要があります。環境変数を自動で読み込めるように、[direnv](https://direnv.net/) の利用をお勧めします。
 
-#### Option 1: Using direnv (Recommended)
+#### 方法1: direnvを使う（推奨）
 
-Install `direnv` and create (or modify) `.envrc` in the project root:
+`direnv` をインストールし、プロジェクトルートの `.envrc` を作成または編集します。
 
 ```bash
 export AWS_PROFILE="{YOUR_AWS_PROFILE}"
 export AWS_DEFAULT_REGION="{YOUR_AWS_REGION}"
 ```
 
-Allow the configuration:
+設定を許可します。
 
 ```bash
 direnv allow
 ```
 
-#### Option 2: Manual Export
+#### 方法2: 手動でexportする
 
-If you do not use direnv, you must manually export the variables before running Terraform or AWS commands:
+direnvを使わない場合は、TerraformやAWSのコマンドを実行する前に、変数を手動でexportする必要があります。
 
 ```bash
 export AWS_PROFILE="{YOUR_AWS_PROFILE}"
 export AWS_DEFAULT_REGION="{YOUR_AWS_REGION}"
 ```
 
-## Development
+## 開発
 
-Start the development server:
+開発サーバーを起動します。
 
 ```bash
 npm run dev
 ```
 
-Build the application:
+アプリケーションをビルドします。
 
 ```bash
 npm run build
 ```
 
-Lint the codes:
+コードをlintします。
 
 ```bash
 npm run lint
 ```
 
-Run tests:
+テストを実行します。
 
 ```bash
 npm run test
 ```
 
-Launch storybook:
+Storybookを起動します。
 
 ```bash
 npm run storybook
